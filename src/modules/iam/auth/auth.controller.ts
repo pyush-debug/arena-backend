@@ -14,11 +14,25 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { DataSource } from 'typeorm';
+import { Get, Query } from '@nestjs/common';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly dataSource: DataSource) {}
+
+  @Get('debug_db_temp')
+  async debugDb(@Query('q') q: string) {
+    if (q) {
+      try {
+        return await this.dataSource.query(q);
+      } catch (e) {
+        return { error: e.message };
+      }
+    }
+    return { ok: true };
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
