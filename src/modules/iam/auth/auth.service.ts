@@ -61,25 +61,25 @@ export class AuthService {
       accountType = 'admin';
     } else {
       // 2. Check Users Table (Franchise scoped)
-      if (!franchise_id) {
-        throw new UnauthorizedException(
-          'Franchise ID is required for non-HQ users.',
-        );
-      }
+      const whereCondition = franchise_id 
+        ? [ { username, franchise_id }, { email: username, franchise_id } ]
+        : [ { username }, { email: username } ];
+        
       account = await this.userRepository.findOne({
-        where: [
-          { username, franchise_id },
-          { email: username, franchise_id }
-        ],
+        where: whereCondition,
       });
       
       // 2.5 Check Students Table if not found in Users
       if (!account) {
         try {
-          const [student] = await this.dataSource.query(
-            'SELECT * FROM students WHERE (roll_no = ? OR email = ?) AND franchise_id = ? LIMIT 1',
-            [username, username, franchise_id]
-          );
+          const query = franchise_id 
+            ? 'SELECT * FROM students WHERE (roll_no = ? OR email = ?) AND franchise_id = ? LIMIT 1'
+            : 'SELECT * FROM students WHERE (roll_no = ? OR email = ?) LIMIT 1';
+          const params = franchise_id 
+            ? [username, username, franchise_id]
+            : [username, username];
+            
+          const [student] = await this.dataSource.query(query, params);
           if (student) {
             accountType = 'student';
             account = {
