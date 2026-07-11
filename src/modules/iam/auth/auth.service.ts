@@ -163,12 +163,12 @@ export class AuthService {
     let branch_name = 'Arena OS';
     if (sessionFranchise) {
       const [franchiseData] = await this.dataSource.query(
-        'SELECT logo, brand_name, branch_code FROM franchises WHERE id = ? LIMIT 1',
+        'SELECT logo, branch_name, branch_code FROM franchises WHERE id = ? LIMIT 1',
         [sessionFranchise]
       );
       if (franchiseData) {
         franchise_logo = franchiseData.logo;
-        branch_name = franchiseData.brand_name || franchiseData.branch_code || 'Arena OS';
+        branch_name = franchiseData.branch_name || franchiseData.branch_code || 'Arena OS';
       }
     }
 
