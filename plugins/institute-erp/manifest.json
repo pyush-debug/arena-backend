@@ -1,0 +1,24 @@
+{
+  "plugin_id": "com.arenaos.instituteerp",
+  "version": "1.0.0",
+  "name": "Arena OS Institute ERP",
+  "description": "Higher Education Management",
+  "author": "DeepMind Framework",
+  "main": "dist/institute-erp.module.js",
+  "dependencies": {
+    "@arenaos/core": "^2.5.0",
+    "@arenaos/tenant-engine": "^1.0.0"
+  },
+  "database_migrations": [
+    "V041_institute_erp_core.sql",
+    "V042_institute_academics.sql",
+    "V043_institute_operations.sql"
+  ],
+  "ui_menus": [
+    { "role": "ROLE_ACADEMICS", "title": "Academics", "icon": "school", "route": "/institute/academics" },
+    { "role": "ROLE_PLACEMENT", "title": "Placement Cell", "icon": "work", "route": "/institute/placements" },
+    { "role": "ROLE_ALUMNI", "title": "Alumni Network", "icon": "groups", "route": "/institute/alumni" },
+    { "role": "ROLE_FINANCE", "title": "Fees", "icon": "account_balance", "route": "/institute/fees" },
+    { "role": "ROLE_CAMPUS", "title": "Campus", "icon": "domain", "route": "/institute/campus" }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "plugin_id": "com.arenaos.example",
+  "name": "Example Plugin",
+  "version": "1.0.0",
+  "author": "Arena OS Team",
+  "description": "Boilerplate plugin template for developers.",
+  "category": "Core",
+  "compatibility_matrix": {
+    "core_version": ">=1.0.0",
+    "api_version": "v1",
+    "database_version": "V037"
+  },
+  "dependencies": [],
+  "permissions": ["READ_EXAMPLE", "WRITE_EXAMPLE"],
+  "routes": {
+    "api_prefix": "/v1/example"
+  },
+  "ui_metadata": {
+    "sidebar": {
+      "menus": [
+        {
+          "id": "example-menu",
+          "label": "Example",
+          "icon": "box",
+          "route": "/example"
+        }
+      ]
+    }
+  },
+  "events": {
+    "consumes": [],
+    "produces": []
+  }
+}
