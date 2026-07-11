@@ -73,11 +73,11 @@ export class AuthService {
       if (!account) {
         try {
           const query = franchise_id 
-            ? 'SELECT * FROM students WHERE (roll_no = ? OR email = ?) AND franchise_id = ? LIMIT 1'
-            : 'SELECT * FROM students WHERE (roll_no = ? OR email = ?) LIMIT 1';
+            ? 'SELECT * FROM students WHERE (roll_no = ? OR email = ? OR login_id = ?) AND franchise_id = ? LIMIT 1'
+            : 'SELECT * FROM students WHERE (roll_no = ? OR email = ? OR login_id = ?) LIMIT 1';
           const params = franchise_id 
-            ? [username, username, franchise_id]
-            : [username, username];
+            ? [username, username, username, franchise_id]
+            : [username, username, username];
             
           const [student] = await this.dataSource.query(query, params);
           if (student) {
