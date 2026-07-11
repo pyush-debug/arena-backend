@@ -159,14 +159,29 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
+    let franchise_logo = null;
+    let branch_name = 'Arena OS';
+    if (sessionFranchise) {
+      const [franchiseData] = await this.dataSource.query(
+        'SELECT logo, brand_name, branch_code FROM franchises WHERE id = ? LIMIT 1',
+        [sessionFranchise]
+      );
+      if (franchiseData) {
+        franchise_logo = franchiseData.logo;
+        branch_name = franchiseData.brand_name || franchiseData.branch_code || 'Arena OS';
+      }
+    }
+
     return {
       accessToken,
       refreshToken,
       user: {
         id: account.id,
         username: account.username,
-        role: account.role,
+        role: accountType === 'admin' ? account.role : 'user',
         franchise_id: sessionFranchise,
+        franchise_logo,
+        branch_name,
       },
     };
   }
