@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => {
         const dbConfig = {
           type: 'mariadb' as const,
-          host: 'ictcomputereducation.com',
+          host: 'sg2plzcpnl509240.prod.sin2.secureserver.net',
           port: 3306,
           username: 'admin2',
           password: '%JC9A4o3QvbgjXS%',
