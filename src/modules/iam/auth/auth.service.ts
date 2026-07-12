@@ -55,11 +55,15 @@ export class AuthService {
     let account: User | Admin | null = null;
     let accountType = 'user';
 
-    // 1. Check Admin Table (SuperAdmins)
-    account = await this.adminRepository.findOne({ where: { username } });
-    if (account) {
-      accountType = 'admin';
-    } else {
+    // 1. Check Admin Table (SuperAdmins) ONLY if no specific franchise is requested
+    if (!franchise_id || String(franchise_id).toLowerCase() === 'hq' || String(franchise_id) === '0') {
+      account = await this.adminRepository.findOne({ where: { username } });
+      if (account) {
+        accountType = 'admin';
+      }
+    }
+
+    if (!account) {
       // 2. Check Users Table (Franchise scoped)
       const whereCondition = franchise_id 
         ? [ { username, franchise_id }, { email: username, franchise_id } ]
@@ -182,7 +186,7 @@ export class AuthService {
         franchise_id: sessionFranchise,
         franchise_logo,
         branch_name,
-      },
+      } as any,
     };
   }
 
@@ -236,9 +240,9 @@ export class AuthService {
             id: student.id,
             username: student.roll_no || student.email,
             password: student.password,
+            name: student.student_name,
             role: 'student',
             franchise_id: student.franchise_id,
-            student_name: student.student_name,
             status: 'active'
           } as any;
         }

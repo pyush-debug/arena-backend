@@ -51,10 +51,23 @@ export class ManifestController {
     }
 
     // Dynamic UI logic based on Franchise addons
+    // Dynamic UI logic based on Franchise addons
+    const selectedModule = req.query.module as string | undefined;
+
     if (organization) {
       const franchise = await this.franchiseRepo.findOne({ where: { id: organization } });
       if (franchise) {
-        if (franchise.addon_institute_erp === 1) {
+        
+        // Auto-correct module if the user belongs strictly to a resort
+        let activeModule = selectedModule;
+        if (franchise.addon_institute_erp === 0 && franchise.addon_resort_erp === 1) {
+            activeModule = 'resort';
+        } else if (franchise.plan_type && franchise.plan_type.toLowerCase().includes('resort')) {
+            activeModule = 'resort';
+        }
+
+        if (!activeModule || activeModule === 'institute') {
+          // Institute sidebar menus...
           sidebarMenus.push(
             { title: 'Library Desk', icon: 'local_library', route: '/library', apiEndpoint: '/v1/dynamic/library' },
             { title: 'Staff Desk', icon: 'badge', route: '/staff', apiEndpoint: '/v1/dynamic/staff' },
@@ -72,6 +85,19 @@ export class ManifestController {
             { title: 'Expenses', icon: 'receipt', route: '/expenses', apiEndpoint: '/v1/dynamic/expenses' }
           );
 
+          // Institute KPIs
+          dashboardWidgets.push({
+            type: 'kpi_grid',
+            items: [
+              { title: 'ACTIVE STUDENTS', value: '0' },
+              { title: 'TODAY PRESENT', value: '0' },
+              { title: 'NET REVENUE', value: '₹0' },
+              { title: 'TOTAL EXPENSES', value: '₹0' },
+              { title: 'TODAY\'S INCOME', value: '₹0' },
+              { title: 'ACTIVE STAFF', value: '0' },
+            ]
+          });
+
           if (franchise.addon_exam_engine === 1) {
             sidebarMenus.push({ title: 'Exam Engine', icon: 'quiz', route: '/exams', apiEndpoint: '/v1/institute/institute-exams' });
             dashboardWidgets.push({ title: 'Upcoming Exams', type: 'list' });
@@ -87,7 +113,7 @@ export class ManifestController {
           }
         }
 
-        if (franchise.addon_resort_erp === 1) {
+        if (!activeModule || activeModule === 'resort') {
           sidebarMenus.push(
             { title: 'Resort Housekeeping', icon: 'cleaning_services', route: '/housekeeping', apiEndpoint: '/v1/dynamic/resort_housekeeping' },
             { title: 'Resort Laundry', icon: 'local_laundry_service', route: '/laundry', apiEndpoint: '/v1/dynamic/resort_laundry_orders' },
@@ -95,9 +121,23 @@ export class ManifestController {
             { title: 'Resort Staff', icon: 'badge', route: '/staff', apiEndpoint: '/v1/dynamic/resort_staff' },
             { title: 'Feedback', icon: 'feedback', route: '/feedback', apiEndpoint: '/v1/dynamic/resort_feedbacks' }
           );
+
+          // Resort KPIs
+          dashboardWidgets.push({
+            type: 'kpi_grid',
+            items: [
+              { title: 'OCCUPIED ROOMS', value: '0' },
+              { title: 'TODAY CHECK-INS', value: '0' },
+              { title: 'NET REVENUE', value: '₹0' },
+              { title: 'PENDING ORDERS', value: '0' },
+            ]
+          });
         }
       }
-    } else if (userRole.toLowerCase() === 'admin' || userRole.toLowerCase() === 'super_admin' || userRole.toLowerCase() === 'hq') {
+    }
+    
+    // Always push HQ menus if the user is an admin, regardless of whether organization is set
+    if (userRole.toLowerCase() === 'admin' || userRole.toLowerCase() === 'super_admin' || userRole.toLowerCase() === 'hq') {
       sidebarMenus.push(
         { title: 'HQ Dashboard', icon: 'dashboard', route: '/dashboard', apiEndpoint: '/v1/hq/dashboard' },
         { title: 'Franchise Management', icon: 'business', route: '/franchises', apiEndpoint: '/v1/hq/franchises' },
@@ -108,10 +148,17 @@ export class ManifestController {
         { title: 'System Audit Logs', icon: 'security', route: '/logs', apiEndpoint: '/v1/audit' },
         { title: 'API Analytics', icon: 'analytics', route: '/analytics', apiEndpoint: '/v1/hq/analytics' },
       );
-      dashboardWidgets.push(
-        { title: 'Welcome Admin', type: 'greeting' },
-        { title: 'Total Branches', type: 'stat', value: 'N/A' },
-      );
+      
+      // HQ KPIs
+      dashboardWidgets.push({
+        type: 'kpi_grid',
+        items: [
+          { title: 'ACTIVE FRANCHISES', value: '0' },
+          { title: 'EXPIRED FRANCHISES', value: '0' },
+          { title: 'TOTAL REVENUE', value: '₹0' },
+          { title: 'AI USAGE', value: '0' },
+        ]
+      });
     }
 
     // Build franchise info for the app
@@ -121,6 +168,11 @@ export class ManifestController {
     if (organization) {
       const franchise = await this.franchiseRepo.findOne({ where: { id: organization } });
       if (franchise) {
+        const expiryDate = franchise.expiry_date ? new Date(franchise.expiry_date) : null;
+        const now = new Date();
+        const isExpired = expiryDate ? expiryDate < now : false;
+        const daysExpired = isExpired ? Math.floor((now.getTime() - expiryDate!.getTime()) / (1000 * 3600 * 24)) : 0;
+
         franchiseInfo = {
           id: franchise.id,
           branch_name: franchise.branch_name,
@@ -132,6 +184,9 @@ export class ManifestController {
           contact_phone: franchise.contact_phone,
           city: franchise.city,
           plan_type: franchise.plan_type,
+          isExpired: isExpired,
+          daysExpired: daysExpired,
+          expiryDate: franchise.expiry_date
         };
       }
     }
