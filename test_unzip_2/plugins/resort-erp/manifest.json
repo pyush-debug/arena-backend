@@ -1,0 +1,26 @@
+{
+  "plugin_id": "com.arenaos.resorterp",
+  "version": "1.0.0",
+  "name": "Arena OS Resort ERP",
+  "description": "Enterprise Hospitality Management",
+  "author": "DeepMind Framework",
+  "main": "dist/resort-erp.module.js",
+  "dependencies": {
+    "@arenaos/core": "^2.5.0",
+    "@arenaos/tenant-engine": "^1.0.0"
+  },
+  "database_migrations": [
+    "V044_resort_erp_core.sql",
+    "V045_resort_operations.sql"
+  ],
+  "ui_menus": [
+    { "role": "ROLE_RECEPTION", "title": "Front Desk", "icon": "hotel", "route": "/resort/reception" },
+    { "role": "ROLE_HOUSEKEEPING", "title": "Housekeeping", "icon": "cleaning_services", "route": "/resort/housekeeping" },
+    { "role": "ROLE_RESTAURANT", "title": "Restaurant POS", "icon": "restaurant", "route": "/resort/pos" },
+    { "role": "ROLE_KITCHEN", "title": "Kitchen Display", "icon": "local_dining", "route": "/resort/kitchen" },
+    { "role": "ROLE_SPA", "title": "Spa Booking", "icon": "spa", "route": "/resort/spa" },
+    { "role": "ROLE_BANQUET", "title": "Banquet Calendar", "icon": "event_seat", "route": "/resort/banquet" },
+    { "role": "ROLE_INVENTORY", "title": "Inventory Control", "icon": "inventory", "route": "/resort/inventory" },
+    { "role": "ROLE_MAINTENANCE", "title": "Work Orders", "icon": "build", "route": "/resort/maintenance" }
+  ]
+}

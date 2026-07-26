@@ -1,0 +1,44 @@
+{
+  "plugin_id": "com.arenaos.schoolerp",
+  "name": "School ERP Core",
+  "version": "1.0.0",
+  "author": "Arena OS Team",
+  "description": "Comprehensive School Management System with strict academic tracking.",
+  "category": "School",
+  "compatibility_matrix": {
+    "core_version": ">=1.0.0",
+    "api_version": "v1",
+    "database_version": "V038"
+  },
+  "dependencies": [],
+  "permissions": [
+    "MANAGE_STUDENTS",
+    "MANAGE_ACADEMICS",
+    "MANAGE_ADMISSIONS"
+  ],
+  "routes": {
+    "api_prefix": "/v1/school"
+  },
+  "ui_metadata": {
+    "sidebar": {
+      "menus": [
+        {
+          "id": "academics",
+          "label": "Academics",
+          "icon": "book-open",
+          "route": "/school/academics"
+        },
+        {
+          "id": "students",
+          "label": "Students",
+          "icon": "users",
+          "route": "/school/students"
+        }
+      ]
+    }
+  },
+  "events": {
+    "consumes": [],
+    "produces": ["student.admitted", "student.graduated"]
+  }
+}
