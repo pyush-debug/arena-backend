@@ -7,20 +7,6 @@ import { DataSource } from 'typeorm';
 export class StudentController {
   constructor(private readonly dataSource: DataSource) {}
 
-  /** Returns the base URL for serving uploaded assets (photos, QR images etc.) */
-  private getUploadsBaseUrl(): string {
-    return process.env.UPLOADS_BASE_URL || 'https://ictcomputereducation.com/actions/uploads';
-  }
-
-  /** Returns a proper photo URL for a student photo filename */
-  private getPhotoUrl(rawPhoto: string, studentName: string): string {
-    if (!rawPhoto || rawPhoto === 'null' || rawPhoto === '') {
-      return `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=8b5cf6&color=fff&size=256&bold=true`;
-    }
-    if (rawPhoto.startsWith('http')) return rawPhoto;
-    return `${this.getUploadsBaseUrl()}/${rawPhoto}`;
-  }
-
   @Get('dashboard')
   async getDashboard(@Req() req: any) {
     const userId = (req.user.userId || req.user.sub || req.user.id);
@@ -44,8 +30,13 @@ export class StudentController {
 
     // 2. Photo URL
     const studentName = student.name || 'Student';
+    let photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=3b82f6&color=fff&size=128&bold=true`;
     let photoRaw = student.photo || student.student_dp || '';
-    let photoUrl = this.getPhotoUrl(photoRaw, studentName);
+    if (photoRaw && !photoRaw.startsWith('http')) {
+      photoUrl = `http://localhost:8085/v1/auth/student-photo/${photoRaw}?t=${Date.now()}`;
+    } else if (photoRaw) {
+      photoUrl = photoRaw;
+    }
 
     // 3. Gamification data
     let isGamified = false;
@@ -254,8 +245,13 @@ export class StudentController {
     return {
       success: true,
       data: students.map((s: any) => {
+        let photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=8b5cf6&color=fff&size=128`;
         let photoRaw = s.photo || s.student_dp || '';
-        let photo = this.getPhotoUrl(photoRaw, s.name);
+        if (photoRaw && !photoRaw.startsWith('http')) {
+          photo = `http://localhost:8085/v1/auth/student-photo/${photoRaw}?t=${Date.now()}`;
+        } else if (photoRaw) {
+          photo = photoRaw;
+        }
         return {
           id: s.id, name: s.name, photo,
           course: s.course_name || 'Student',
@@ -621,7 +617,12 @@ export class StudentController {
     if (s.branch_code) opId = s.branch_code + '/' + opId;
 
     let photoRaw = s.photo || s.student_dp || '';
-    let photoUrl = this.getPhotoUrl(photoRaw, s.name);
+    let photoUrl = photoRaw;
+    if (photoRaw && !photoRaw.startsWith('http')) {
+      photoUrl = `http://localhost:8085/v1/auth/student-photo/${photoRaw}?t=${Date.now()}`;
+    } else if (!photoRaw) {
+      photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=8b5cf6&color=fff&size=256`;
+    }
 
     return {
       success: true,
@@ -734,7 +735,7 @@ export class StudentController {
     const bInfo = branchQuery[0] || {};
     let upi_id = bInfo.upi_id;
     let upi_name = bInfo.upi_name;
-    let qr_image = bInfo.qr_image ? `${this.getUploadsBaseUrl()}/${bInfo.qr_image}` : null;
+    let qr_image = bInfo.qr_image ? `http://localhost:8085/uploads/${bInfo.qr_image}` : null;
 
     if (!upi_id) upi_id = `${bInfo.phone || 'admin'}@upi`;
     if (!upi_name) upi_name = bInfo.branch_name || 'Admin';
@@ -1051,7 +1052,7 @@ export class StudentController {
       const { course_id, franchise_id } = studentRes[0];
 
       const timetable = await this.dataSource.query(
-        `SELECT id, subject_name as subject, batch_time, day_of_week as days, time_slot FROM time_table WHERE course_id=? AND franchise_id=? ORDER BY id DESC`,
+        `SELECT id, subject, batch_time, days, status FROM time_table WHERE course_id=? AND franchise_id=? ORDER BY id DESC`,
         [course_id, franchise_id]
       );
       
@@ -1077,7 +1078,7 @@ export class StudentController {
       let syllabus = [];
       try {
         syllabus = await this.dataSource.query(
-          `SELECT id, title, file_name, upload_date FROM syllabus WHERE course_id=? AND franchise_id=? ORDER BY id DESC`,
+          `SELECT id, title, file_name, uploaded_at FROM syllabus WHERE course_id=? AND franchise_id=? ORDER BY id DESC`,
           [course_id, franchise_id]
         );
       } catch (e) {
