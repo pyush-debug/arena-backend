@@ -1,6 +1,17 @@
 import { Controller, Get, Post, Req, Res, Param, Body, UseGuards, UnauthorizedException, InternalServerErrorException, ForbiddenException } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { Request, Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import { DataSource } from 'typeorm';
+
+// Configure Cloudinary for permanent image hosting
+cloudinary.config({
+  cloud_name: 'n9b214gb',
+  api_key: '793197693191996',
+  api_secret: 'PLuH16oCO6TAtNpuNbLVrHtwOIk'
+});
 
 @Controller({ path: 'student', version: '1' })
 @UseGuards(JwtAuthGuard)
@@ -702,39 +713,63 @@ export class StudentController {
     const userId = (req.user.userId || req.user.sub || req.user.id);
     if (req.user.type !== 'student') throw new UnauthorizedException('Students only');
 
-    const courseQuery = await this.dataSource.query(
-      `SELECT c.fees as total_fee FROM students s JOIN courses c ON s.course_id = c.id WHERE s.id=?`,
-      [userId]
-    );
-
-    const feeQuery = await this.dataSource.query(
-      `SELECT SUM(amount) as paid, SUM(discount) as disc FROM fees WHERE student_id=?`,
+    const feeDataQuery = await this.dataSource.query(
+      `SELECT 
+          c.fees as total_course_fee, 
+          s.last_due_amount,
+          s.discount_amount,
+          (SELECT SUM(amount) FROM fee_payments WHERE student_id = s.id) as paid_amount
+       FROM students s 
+       LEFT JOIN courses c ON s.course_id = c.id 
+       WHERE s.id=?`,
       [userId]
     );
 
     const history = await this.dataSource.query(
-      `SELECT * FROM fees WHERE student_id=? ORDER BY id DESC`,
+      `SELECT * FROM fee_payments WHERE student_id=? ORDER BY id DESC`,
       [userId]
     );
 
-    const totalFee = parseFloat(courseQuery[0]?.total_fee || '0');
-    const paid = parseFloat(feeQuery[0]?.paid || '0');
-    const disc = parseFloat(feeQuery[0]?.disc || '0');
+    const course_fee = parseFloat(feeDataQuery[0]?.total_course_fee || '0');
+    const custom_fee = parseFloat(feeDataQuery[0]?.last_due_amount || '0');
+    const totalFee = custom_fee > 0 ? custom_fee : course_fee;
+
+    const paid = parseFloat(feeDataQuery[0]?.paid_amount || '0');
+    const disc = parseFloat(feeDataQuery[0]?.discount_amount || '0');
     const due = totalFee - paid - disc;
 
     const branchQuery = await this.dataSource.query(
-      `SELECT s.franchise_id, f.branch_name, f.phone, bs.upi_id, bs.upi_name, bs.qr_image 
+      `SELECT s.franchise_id, f.branch_name, f.phone 
        FROM students s 
        JOIN franchises f ON s.franchise_id = f.id 
-       LEFT JOIN branch_settings bs ON f.id = bs.franchise_id
        WHERE s.id=?`,
       [userId]
     );
 
     const bInfo = branchQuery[0] || {};
-    let upi_id = bInfo.upi_id;
-    let upi_name = bInfo.upi_name;
-    let qr_image = bInfo.qr_image ? `${this.getUploadsBaseUrl()}/${bInfo.qr_image}` : null;
+    let upi_id = null;
+    let upi_name = null;
+    let qr_image = null;
+
+    if (bInfo.franchise_id == 1) {
+      const masterPay = await this.dataSource.query(`SELECT upi_id, upi_name, qr_image FROM master_payment_info WHERE id=1`);
+      if (masterPay && masterPay.length > 0) {
+        upi_id = masterPay[0].upi_id;
+        upi_name = masterPay[0].upi_name;
+        qr_image = masterPay[0].qr_image;
+      }
+    } else {
+      const branchPay = await this.dataSource.query(`SELECT upi_id, upi_name, qr_image FROM branch_settings WHERE franchise_id=?`, [bInfo.franchise_id]);
+      if (branchPay && branchPay.length > 0) {
+        upi_id = branchPay[0].upi_id;
+        upi_name = branchPay[0].upi_name;
+        qr_image = branchPay[0].qr_image;
+      }
+    }
+
+    if (qr_image) {
+      qr_image = qr_image.startsWith('http') ? qr_image : `${this.getUploadsBaseUrl()}/${qr_image}`;
+    }
 
     if (!upi_id) upi_id = `${bInfo.phone || 'admin'}@upi`;
     if (!upi_name) upi_name = bInfo.branch_name || 'Admin';
@@ -797,20 +832,19 @@ export class StudentController {
 
       const fs = require('fs');
       const path = require('path');
-      const uploadDir = path.join(process.cwd(), 'uploads', 'fee_receipts');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const matches = base64_screenshot.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
       let filename = '';
-      if (matches && matches.length === 3) {
-        const ext = matches[1].split('/')[1] === 'png' ? 'png' : 'jpg';
-        filename = `fee_${userId}_${Date.now()}.${ext}`;
-        const buffer = Buffer.from(matches[2], 'base64');
-        fs.writeFileSync(path.join(uploadDir, filename), buffer);
+      if (base64_screenshot) {
+        try {
+          const result = await cloudinary.uploader.upload(base64_screenshot, {
+            folder: 'arena_os_fee_receipts'
+          });
+          filename = result.secure_url;
+        } catch (err) {
+          console.error('Cloudinary upload error:', err);
+          return { success: false, message: 'Invalid screenshot format or upload failed' };
+        }
       } else {
-        return { success: false, message: 'Invalid screenshot format' };
+        return { success: false, message: 'No screenshot provided' };
       }
 
       const sQuery = await this.dataSource.query(`SELECT franchise_id FROM students WHERE id=?`, [userId]);
@@ -845,24 +879,14 @@ export class StudentController {
 
     if (base64_photo) {
       try {
-        const fs = require('fs');
-        const path = require('path');
-        const matches = base64_photo.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-        if (matches && matches.length === 3) {
-          let ext = 'jpg';
-          if (matches[1] === 'image/png') ext = 'png';
-          else if (matches[1] === 'image/webp') ext = 'webp';
-
-          const buffer = Buffer.from(matches[2], 'base64');
-          const fileName = `stu_dp_${userId}_${Date.now()}.${ext}`;
-          const uploadPath = path.join(__dirname, '..', '..', '..', '..', '..', 'Downloads', 'actions', 'uploads', fileName);
-          fs.writeFileSync(uploadPath, buffer);
-          
-          updates.push('student_dp=?'); 
-          params.push(fileName);
-        }
+        const result = await cloudinary.uploader.upload(base64_photo, {
+          folder: 'arena_os_profiles'
+        });
+        
+        updates.push('student_dp=?'); 
+        params.push(result.secure_url);
       } catch (e) {
-        console.error('Error saving dp:', e);
+        console.error('Error saving dp to Cloudinary:', e);
       }
     }
 
