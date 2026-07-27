@@ -992,7 +992,7 @@ export class StudentController {
         discount: disc,
         due: due > 0 ? due : 0,
         history,
-        requests: feeRequests,
+        requests: combinedRequests,
         branch_name: bInfo.branch_name,
         upi_id,
         upi_name,
