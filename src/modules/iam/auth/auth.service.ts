@@ -455,7 +455,10 @@ export class AuthService {
     displayRole = roleMap[rawRole.toLowerCase()] || rawRole.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     // Determine profile photo
-    const profilePhoto = account.profile_pic || account.photo || '';
+    let profilePhoto = account.profile_pic || account.photo || '';
+    if (profilePhoto && !profilePhoto.startsWith('http')) {
+      profilePhoto = `https://ictcomputereducation.com/actions/uploads/${profilePhoto}`;
+    }
 
     // Determine display name
     let displayName = 'Unknown';
