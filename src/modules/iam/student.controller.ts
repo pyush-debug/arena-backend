@@ -747,9 +747,9 @@ export class StudentController {
     );
 
     const bInfo = branchQuery[0] || {};
-    let upi_id = null;
-    let upi_name = null;
-    let qr_image = null;
+    let upi_id: string | null = null;
+    let upi_name: string | null = null;
+    let qr_image: string | null = null;
 
     if (bInfo.franchise_id == 1) {
       const masterPay = await this.dataSource.query(`SELECT upi_id, upi_name, qr_image FROM master_payment_info WHERE id=1`);
@@ -768,13 +768,13 @@ export class StudentController {
     }
 
     if (qr_image) {
-      qr_image = qr_image.startsWith('http') ? qr_image : `${this.getUploadsBaseUrl()}/${qr_image}`;
+        qr_image = qr_image.startsWith('http') ? qr_image : `${this.getUploadsBaseUrl()}/${qr_image}`;
     }
 
     if (!upi_id) upi_id = `${bInfo.phone || 'admin'}@upi`;
     if (!upi_name) upi_name = bInfo.branch_name || 'Admin';
     if (!qr_image) {
-      qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=upi://pay?pa=${upi_id}&pn=${encodeURIComponent(upi_name)}&cu=INR`;
+      qr_image = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=upi://pay?pa=${upi_id}&pn=${encodeURIComponent(upi_name || 'Admin')}&cu=INR`;
     }
 
     let feeRequests = [];
