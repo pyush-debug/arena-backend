@@ -23,11 +23,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           connectTimeout: 30000,
           extra: {
             connectTimeout: 30000,
-            multipleStatements: true
-          }
+            multipleStatements: true,
+          },
         };
-        console.log('[ARENA-DB] Database Connection:', dbConfig.host, 'user:', dbConfig.username, 'db:', dbConfig.database);
-        return dbConfig as any;
+        console.log(
+          '[ARENA-DB] Database Connection:',
+          dbConfig.host,
+          'user:',
+          dbConfig.username,
+          'db:',
+          dbConfig.database,
+        );
+        return dbConfig;
       },
       inject: [ConfigService],
     }),

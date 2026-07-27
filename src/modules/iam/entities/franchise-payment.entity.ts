@@ -1,5 +1,13 @@
 import { Franchise } from './franchise.entity';
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { TenantBaseEntity } from '../../../core/sdk/base/base.entity';
 
 @Entity('franchise_payments')
@@ -55,7 +63,6 @@ export class FranchisePayment extends TenantBaseEntity {
 
   @Column({ name: 'created_by', type: 'int', nullable: true })
   created_by: number | null; // Admin ID who recorded it
-
 
   @ManyToOne(() => Franchise)
   @JoinColumn({ name: 'franchise_id' })

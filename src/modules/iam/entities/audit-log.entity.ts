@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('resort_audit_logs')
 @Index(['franchise_id'])
@@ -33,8 +41,6 @@ export class AuditLog {
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date | null;
-
-
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;

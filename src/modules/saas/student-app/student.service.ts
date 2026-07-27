@@ -13,53 +13,65 @@ export class StudentService {
         FROM students 
         WHERE id = ? AND franchise_id = ?
       `;
-      const students = await this.dataSource.query(studentQuery, [studentId, franchiseId]);
-      
+      const students = await this.dataSource.query(studentQuery, [
+        studentId,
+        franchiseId,
+      ]);
+
       if (students.length === 0) {
-        throw new HttpException('Student not found or branch mismatch', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Student not found or branch mismatch',
+          HttpStatus.NOT_FOUND,
+        );
       }
-      
+
       const student = students[0];
 
       // Fetch Attendance KPI (safe fallback to empty array if table doesn't exist)
       let total_present = 0;
       try {
         const attQuery = `SELECT COUNT(*) as total_present FROM attendance WHERE student_id = ? AND franchise_id = ? AND status = 'Present'`;
-        const attRes = await this.dataSource.query(attQuery, [studentId, franchiseId]);
+        const attRes = await this.dataSource.query(attQuery, [
+          studentId,
+          franchiseId,
+        ]);
         total_present = attRes[0]?.total_present || 0;
-      } catch(e) {}
+      } catch (e) {}
 
       // Fetch Fee Due KPI
       let total_due = 0;
       try {
         const feeQuery = `SELECT IFNULL(SUM(due_amount), 0) as total_due FROM fee_payments WHERE student_id = ? AND franchise_id = ? AND payment_status != 'Paid'`;
-        const feeRes = await this.dataSource.query(feeQuery, [studentId, franchiseId]);
+        const feeRes = await this.dataSource.query(feeQuery, [
+          studentId,
+          franchiseId,
+        ]);
         total_due = feeRes[0]?.total_due || 0;
-      } catch(e) {}
+      } catch (e) {}
 
       // Active Exams
       let activeExams = [];
       try {
         const examQuery = `SELECT id, exam_name, exam_date, duration FROM exams WHERE franchise_id = ? AND status = 'Active' ORDER BY exam_date ASC LIMIT 5`;
         activeExams = await this.dataSource.query(examQuery, [franchiseId]);
-      } catch(e) {}
+      } catch (e) {}
 
       // Notices
       let notices = [];
       try {
         const noticeQuery = `SELECT id, title, date, priority FROM notices WHERE franchise_id = ? AND target_audience IN ('All', 'Students') ORDER BY date DESC LIMIT 5`;
         notices = await this.dataSource.query(noticeQuery, [franchiseId]);
-      } catch(e) {}
+      } catch (e) {}
 
       return {
         profile: student,
         kpis: [
           { title: 'Attendance', value: total_present, icon: 'how_to_reg' },
           { title: 'Fee Dues', value: `₹${total_due}`, icon: 'payments' },
-          { title: 'Active Exams', value: activeExams.length, icon: 'quiz' }
+          { title: 'Active Exams', value: activeExams.length, icon: 'quiz' },
         ],
         activeExams,
-        notices
+        notices,
       };
     } catch (e: any) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);

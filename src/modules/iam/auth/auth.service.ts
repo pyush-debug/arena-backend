@@ -199,6 +199,31 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Validate Cross-Portal Login
+    if (loginDto.portal && loginDto.portal !== 'hq' && (account as any).franchise_id) {
+      const franchiseId = (account as any).franchise_id;
+      const [franchiseData] = await this.dataSource.query(
+        'SELECT branch_type FROM franchises WHERE id = ? LIMIT 1',
+        [franchiseId],
+      );
+
+      if (franchiseData) {
+        const branchType = (franchiseData.branch_type || '').toLowerCase();
+        const portal = loginDto.portal.toLowerCase();
+
+        if (portal === 'school' && branchType !== 'school') {
+          this.logger.warn(`Cross-Portal Login Blocked: ${username} attempted to access School portal from ${branchType} branch.`);
+          throw new ForbiddenException('Access Denied: Institute users cannot log into the School portal.');
+        } else if (portal === 'institute' && branchType === 'school') {
+          this.logger.warn(`Cross-Portal Login Blocked: ${username} attempted to access Institute portal from ${branchType} branch.`);
+          throw new ForbiddenException('Access Denied: School users cannot log into the Institute portal.');
+        } else if (portal === 'resort' && !branchType.includes('resort') && !branchType.includes('hotel') && !branchType.includes('lodge')) {
+          this.logger.warn(`Cross-Portal Login Blocked: ${username} attempted to access Resort portal from ${branchType} branch.`);
+          throw new ForbiddenException('Access Denied: Invalid portal access.');
+        }
+      }
+    }
+
     // 4. Lazy Password Migration to Argon2id (DISABLED to keep plaintext passwords for Admin UI)
     /*
     if (this.passwordService.needsRehash(account.password as string)) {

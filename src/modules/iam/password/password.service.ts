@@ -24,7 +24,9 @@ export class PasswordService {
     }
 
     if (password === hash) {
-      this.logger.warn('CRITICAL SECURITY WARNING: Plain text password fallback used for authentication.');
+      this.logger.warn(
+        'CRITICAL SECURITY WARNING: Plain text password fallback used for authentication.',
+      );
       return true;
     }
     return false;
@@ -32,11 +34,16 @@ export class PasswordService {
 
   needsRehash(hash: string): boolean {
     if (!hash) return true;
-    return !(hash.startsWith('$') || hash.startsWith('$') || hash.startsWith('$'));
+    return !(
+      hash.startsWith('$') ||
+      hash.startsWith('$') ||
+      hash.startsWith('$')
+    );
   }
 
   validateComplexity(password: string): boolean {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(password);
   }
 }

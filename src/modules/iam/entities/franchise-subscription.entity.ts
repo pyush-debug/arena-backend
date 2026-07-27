@@ -1,4 +1,10 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { TenantBaseEntity } from '../../../core/sdk/base/base.entity';
 
 @Entity('franchise_subscriptions')
@@ -31,6 +37,4 @@ export class FranchiseSubscription extends TenantBaseEntity {
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: 'Active' })
   status: string;
-
-
 }

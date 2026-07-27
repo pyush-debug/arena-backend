@@ -7,8 +7,8 @@ import { CacheModule } from '@nestjs/cache-manager';
   imports: [
     CacheModule.register({
       ttl: 300000, // 5 minutes default
-      max: 1000,   // maximum number of items in cache
-    })
+      max: 1000, // maximum number of items in cache
+    }),
   ],
   controllers: [StudentController],
   providers: [StudentService],

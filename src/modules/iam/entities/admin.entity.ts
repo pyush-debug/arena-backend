@@ -1,4 +1,11 @@
-﻿import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+﻿import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('admin')
 export class Admin {
@@ -11,7 +18,12 @@ export class Admin {
   @Column('varchar', { name: 'password', length: 255 })
   password: string;
 
-  @Column('varchar', { name: 'role', length: 50, nullable: true, default: 'Admin' })
+  @Column('varchar', {
+    name: 'role',
+    length: 50,
+    nullable: true,
+    default: 'Admin',
+  })
   role: string | null;
 
   @Column('varchar', { name: 'status', length: 50, default: 'active' })

@@ -24,4 +24,8 @@ export class LoginDto {
   @IsString()
   @IsOptional()
   role?: string;
+
+  @IsString()
+  @IsOptional()
+  portal?: string;
 }

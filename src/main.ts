@@ -41,7 +41,7 @@ async function bootstrap() {
   // Global Interceptors & Filters
   app.useGlobalInterceptors(
     new ResponseInterceptor(),
-    new TenantFilterInterceptor()
+    new TenantFilterInterceptor(),
   );
   app.useGlobalFilters(new GlobalExceptionFilter(logger));
 
@@ -65,4 +65,3 @@ bootstrap().catch((err) => {
   console.error('[ARENA] FATAL: bootstrap() crashed:', err);
   process.exit(1);
 });
-

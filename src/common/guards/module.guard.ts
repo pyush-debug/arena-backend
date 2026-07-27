@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -6,7 +11,10 @@ export class ModuleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredModule = this.reflector.get<string>('module', context.getHandler());
+    const requiredModule = this.reflector.get<string>(
+      'module',
+      context.getHandler(),
+    );
     if (!requiredModule) {
       return true; // No module restriction on this endpoint
     }
@@ -15,7 +23,9 @@ export class ModuleGuard implements CanActivate {
     const user = request.user;
 
     if (!user || !user.moduleId) {
-      throw new ForbiddenException('Access denied: Tenant module context missing.');
+      throw new ForbiddenException(
+        'Access denied: Tenant module context missing.',
+      );
     }
 
     // HQ users have global access, or strict module match
@@ -23,6 +33,8 @@ export class ModuleGuard implements CanActivate {
       return true;
     }
 
-    throw new ForbiddenException(`Access denied: This endpoint is restricted to the '${requiredModule}' module. Your current module is '${user.moduleId}'.`);
+    throw new ForbiddenException(
+      `Access denied: This endpoint is restricted to the '${requiredModule}' module. Your current module is '${user.moduleId}'.`,
+    );
   }
 }

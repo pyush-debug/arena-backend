@@ -14,13 +14,19 @@ export class AppController {
   @Get('ip')
   async getIp() {
     return new Promise((resolve) => {
-      http.get('http://api.ipify.org', (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => { resolve({ ip: data }); });
-      }).on('error', (err) => {
-        resolve({ error: err.message });
-      });
+      http
+        .get('http://api.ipify.org', (res) => {
+          let data = '';
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+          res.on('end', () => {
+            resolve({ ip: data });
+          });
+        })
+        .on('error', (err) => {
+          resolve({ error: err.message });
+        });
     });
   }
 }

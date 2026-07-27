@@ -18,9 +18,7 @@ export interface BaseServiceHooks<T> {
 }
 
 @Injectable()
-export abstract class BaseService<
-  T extends TenantBaseEntity,
-> {
+export abstract class BaseService<T extends TenantBaseEntity> {
   constructor(
     protected readonly repository: Repository<T>,
     protected readonly eventEmitter: EventEmitter2,
@@ -74,7 +72,8 @@ export abstract class BaseService<
       dto as import('typeorm').DeepPartial<T>,
     );
 
-    if ((this as any).afterUpdate) await (this as any).afterUpdate(franchiseId, updated);
+    if ((this as any).afterUpdate)
+      await (this as any).afterUpdate(franchiseId, updated);
     this.eventEmitter.emit(`${this.moduleName.toLowerCase()}.updated`, {
       franchiseId,
       record: updated,
@@ -84,14 +83,16 @@ export abstract class BaseService<
   }
 
   async remove(franchiseId: number, id: number): Promise<void> {
-    if ((this as any).beforeDelete) await (this as any).beforeDelete(franchiseId, id);
+    if ((this as any).beforeDelete)
+      await (this as any).beforeDelete(franchiseId, id);
 
     await this.repository.softDelete({
       id,
       franchise_id: franchiseId,
     } as import('typeorm').FindOptionsWhere<T>);
 
-    if ((this as any).afterDelete) await (this as any).afterDelete(franchiseId, id);
+    if ((this as any).afterDelete)
+      await (this as any).afterDelete(franchiseId, id);
     this.eventEmitter.emit(`${this.moduleName.toLowerCase()}.deleted`, {
       franchiseId,
       id,

@@ -20,27 +20,33 @@ import { Get, Query, Param } from '@nestjs/common';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly dataSource: DataSource) {}
-
-
+  constructor(
+    private readonly authService: AuthService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   @Get('student-photo/:filename')
   async getPhoto(@Param('filename') filename: string, @Res() res: any) {
     const https = require('https');
     const url = `https://ictcomputereducation.com/uploads/${filename}`;
-    
-    https.get(url, (response: any) => {
-      if (response.statusCode === 200) {
-        res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        response.pipe(res);
-      } else {
-        res.status(404).send('Image not found');
-      }
-    }).on('error', () => {
-      res.status(500).send('Proxy error');
-    });
+
+    https
+      .get(url, (response: any) => {
+        if (response.statusCode === 200) {
+          res.setHeader(
+            'Content-Type',
+            response.headers['content-type'] || 'image/jpeg',
+          );
+          res.setHeader('Cache-Control', 'public, max-age=86400');
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          response.pipe(res);
+        } else {
+          res.status(404).send('Image not found');
+        }
+      })
+      .on('error', () => {
+        res.status(500).send('Proxy error');
+      });
   }
 
   @Post('login')
@@ -114,7 +120,10 @@ export class AuthController {
       await this.authService.logoutAllDevices(req.user.userId);
     }
     res.clearCookie('refresh_token');
-    return { success: true, message: 'Logged out from all devices successfully' };
+    return {
+      success: true,
+      message: 'Logged out from all devices successfully',
+    };
   }
 
   @Post('refresh')
@@ -164,7 +173,10 @@ export class AuthController {
   async forgotPassword(@Body('email') email: string, @Req() req: any) {
     if (!email) throw new UnauthorizedException('Email is required');
     await this.authService.forgotPassword(email, req.franchiseId);
-    return { success: true, message: 'If an account exists, a reset link has been sent' };
+    return {
+      success: true,
+      message: 'If an account exists, a reset link has been sent',
+    };
   }
 
   @Post('reset-password')
@@ -193,7 +205,10 @@ export class AuthController {
     if (!req.user || !req.user.userId) {
       throw new UnauthorizedException('User not authenticated');
     }
-    const profile = await this.authService.getMe(req.user.userId, req.user.type || 'user');
+    const profile = await this.authService.getMe(
+      req.user.userId,
+      req.user.type || 'user',
+    );
     return profile;
   }
 }

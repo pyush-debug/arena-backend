@@ -27,18 +27,22 @@ export class TenantFilterInterceptor implements NestInterceptor {
         if (data) {
           // If it's an array of results
           if (Array.isArray(data)) {
-            data.forEach((item) => this.validateTenantIsolation(item, requestFranchiseId));
-          } 
+            data.forEach((item) =>
+              this.validateTenantIsolation(item, requestFranchiseId),
+            );
+          }
           // If it's a paginated response object (e.g. from BaseService { data: [], meta: {} })
           else if (data.data && Array.isArray(data.data)) {
-            data.data.forEach((item: any) => this.validateTenantIsolation(item, requestFranchiseId));
-          } 
+            data.data.forEach((item: any) =>
+              this.validateTenantIsolation(item, requestFranchiseId),
+            );
+          }
           // If it's a single object
           else if (typeof data === 'object') {
             this.validateTenantIsolation(data, requestFranchiseId);
           }
         }
-        
+
         return data;
       }),
     );
@@ -47,8 +51,12 @@ export class TenantFilterInterceptor implements NestInterceptor {
   private validateTenantIsolation(item: any, expectedFranchiseId: number) {
     if (item && item.franchise_id !== undefined && item.franchise_id !== null) {
       if (Number(item.franchise_id) !== Number(expectedFranchiseId)) {
-        this.logger.error(`CRITICAL SECURITY ALERT: Cross-tenant data leakage detected! Record belongs to franchise ${item.franchise_id}, but request is for franchise ${expectedFranchiseId}.`);
-        throw new UnauthorizedException('Security Error: Unauthorized access to tenant data');
+        this.logger.error(
+          `CRITICAL SECURITY ALERT: Cross-tenant data leakage detected! Record belongs to franchise ${item.franchise_id}, but request is for franchise ${expectedFranchiseId}.`,
+        );
+        throw new UnauthorizedException(
+          'Security Error: Unauthorized access to tenant data',
+        );
       }
     }
   }

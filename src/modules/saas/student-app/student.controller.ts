@@ -1,4 +1,12 @@
-import { Controller, Get, Req, UseGuards, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Inject,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../iam/auth/guards/jwt-auth.guard';
 import { StudentService } from './student.service';
 import type { Request } from 'express';
@@ -10,16 +18,19 @@ import type { Cache } from 'cache-manager';
 export class StudentController {
   constructor(
     private readonly studentService: StudentService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   @Get('dashboard')
   async getDashboard(@Req() req: Request) {
     const user = req.user as any;
-    
+
     // STRICT ISOLATION: Only allow users with type 'student' to access this API
     if (user.type !== 'student') {
-      throw new HttpException('Only students can access this portal', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Only students can access this portal',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     const studentId = user.userId;
@@ -27,7 +38,7 @@ export class StudentController {
 
     // Cache key specific to this student to prevent cross-data leakage
     const cacheKey = `student_dashboard_${franchiseId}_${studentId}`;
-    
+
     // Check Redis Cache
     const cachedData = await this.cacheManager.get(cacheKey);
     if (cachedData) {
@@ -36,7 +47,7 @@ export class StudentController {
 
     // Fetch from Database
     const data = await this.studentService.getDashboard(studentId, franchiseId);
-    
+
     // Store in Cache for 5 minutes (300000ms)
     await this.cacheManager.set(cacheKey, data, 300000);
 
@@ -46,18 +57,26 @@ export class StudentController {
   @Get('attendance')
   async getAttendance(@Req() req: Request) {
     const user = req.user as any;
-    if (user.type !== 'student') throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    
-    const data = await this.studentService.getAttendance(user.userId, user.franchiseId);
+    if (user.type !== 'student')
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+
+    const data = await this.studentService.getAttendance(
+      user.userId,
+      user.franchiseId,
+    );
     return { success: true, data };
   }
 
   @Get('fees')
   async getFees(@Req() req: Request) {
     const user = req.user as any;
-    if (user.type !== 'student') throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    
-    const data = await this.studentService.getFees(user.userId, user.franchiseId);
+    if (user.type !== 'student')
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+
+    const data = await this.studentService.getFees(
+      user.userId,
+      user.franchiseId,
+    );
     return { success: true, data };
   }
 }

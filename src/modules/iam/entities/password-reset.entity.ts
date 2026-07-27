@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, Index, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  Index,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('password_resets')
 export class PasswordReset {
@@ -24,7 +32,6 @@ export class PasswordReset {
 
   @Column('boolean', { name: 'is_used', default: false })
   is_used: boolean;
-
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;

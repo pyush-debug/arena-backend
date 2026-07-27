@@ -37,7 +37,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (typeof errorResponse === 'string') {
       message = errorResponse;
     } else if (typeof errorResponse === 'object') {
-      message = ((errorResponse as { message?: string | string[] }).message as string) || message;
+      message =
+        ((errorResponse as { message?: string | string[] })
+          .message as string) || message;
       if (Array.isArray(message)) {
         details = message;
         message = 'Validation Failed';
@@ -52,7 +54,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       );
     }
 
-    const traceId = (request as any).id || request.headers['x-request-id'] || `req-${Date.now()}`;
+    const traceId =
+      (request as any).id ||
+      request.headers['x-request-id'] ||
+      `req-${Date.now()}`;
 
     response.status(status).json({
       success: false,
