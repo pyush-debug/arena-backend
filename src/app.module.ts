@@ -30,19 +30,29 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100, // 100 requests per minute
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100, // 100 requests per minute
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
       validate: envValidation,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', '..', 'Downloads', 'actions', 'uploads'),
+      rootPath: join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'Downloads',
+        'actions',
+        'uploads',
+      ),
       serveRoot: '/uploads/',
-      exclude: ['/v1/(.*)'],
     }),
     ScheduleModule.forRoot(),
     LoggerModule,
@@ -59,13 +69,13 @@ import { APP_GUARD } from '@nestjs/core';
   ],
   controllers: [HealthController, AppController],
   providers: [
-    AuditService, 
-    PluginLoader, 
+    AuditService,
+    PluginLoader,
     AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    }
+    },
   ],
 })
 export class AppModule implements NestModule {
