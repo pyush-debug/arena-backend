@@ -532,6 +532,13 @@ const PORTAL_WIDGETS: Record<string, PortalWidget[]> = {
       roles: ['*'],
     },
     {
+      type: 'communications_row',
+      title: 'Communications',
+      icon: 'campaign',
+      apiEndpoint: '',
+      roles: ['*'],
+    },
+    {
       type: 'ai_risk_engine',
       title: 'Risk Engine',
       icon: 'smart_toy',
