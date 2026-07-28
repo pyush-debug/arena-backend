@@ -37,6 +37,8 @@ import { PlacementController } from './modules/operations/placement.controller';
 import { PlacementService } from './modules/operations/placement.service';
 import { AlumniController } from './modules/operations/alumni.controller';
 import { AlumniService } from './modules/operations/alumni.service';
+import { DashboardController } from './modules/dashboard/dashboard.controller';
+import { DashboardService } from './modules/dashboard/dashboard.service';
 
 @Module({
   imports: [
@@ -66,7 +68,8 @@ import { AlumniService } from './modules/operations/alumni.service';
     InstituteCompanyController,
     InstituteDriveController,
     InstituteSkillController,
-    InstituteDonationController
+    InstituteDonationController,
+    DashboardController
   ],
   providers: [
     AcademicsService,
@@ -78,7 +81,8 @@ import { AlumniService } from './modules/operations/alumni.service';
     InstituteCompanyService,
     InstituteDriveService,
     InstituteSkillService,
-    InstituteDonationService
+    InstituteDonationService,
+    DashboardService
   ],
   exports: [
     AcademicsService,

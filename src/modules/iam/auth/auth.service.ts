@@ -119,8 +119,15 @@ export class AuthService {
           [username],
         );
         if (rawAdmin && rawAdmin.length > 0) {
-          account = rawAdmin[0];
-          accountType = 'admin';
+          account = rawAdmin[0] as any;
+          // Only actual Admins get the 'admin' (HQ) accountType
+          if ((account as any).role === 'Admin' || (account as any).role === 'super_admin') {
+            accountType = 'admin';
+            (account as any).franchise_id = 1; // Admins belong to HQ franchise
+          } else {
+            accountType = 'user';
+            (account as any).franchise_id = 1; // Legacy staff belong to HQ franchise
+          }
         }
       }
 
@@ -157,6 +164,25 @@ export class AuthService {
               } as any;
             }
           } catch (e) {}
+        }
+        
+        // 2.6 Check Parents Table
+        if (!account && !role) {
+          try {
+            const query = 'SELECT p.*, s.franchise_id FROM parent_logins p JOIN students s ON p.student_id = s.id WHERE p.username = ? LIMIT 1';
+            const [parent] = await this.dataSource.query(query, [username]);
+            if (parent) {
+              accountType = 'parent';
+              account = {
+                id: parent.id,
+                username: parent.username,
+                password: parent.password,
+                role: 'parent',
+                franchise_id: parent.franchise_id,
+                status: 'active',
+              } as any;
+            }
+          } catch(e) {}
         }
       }
     }

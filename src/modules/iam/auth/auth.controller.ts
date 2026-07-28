@@ -79,6 +79,7 @@ export class AuthController {
         data: {
           accessToken: result.accessToken,
           user: result.user,
+          available_modules: result.available_modules,
         },
         timestamp: new Date().toISOString(),
       };

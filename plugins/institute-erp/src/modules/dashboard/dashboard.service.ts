@@ -1,0 +1,167 @@
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+
+@Injectable()
+export class DashboardService {
+  constructor(private readonly dataSource: DataSource) {}
+
+  async getOverviewData(franchiseId: number, isSuperAdmin: boolean) {
+    const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
+    const fClauseAlias = isSuperAdmin ? '1=1' : `s.franchise_id='${franchiseId}'`;
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Total Students
+    const stdRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM students WHERE status='Active' AND ${fClause}`);
+    const totalStudents = stdRes[0]?.total || 0;
+
+    // Total Staff
+    const staffRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM staff WHERE ${fClause}`);
+    const totalStaff = staffRes[0]?.total || 0;
+
+    // Present Today
+    const attRes = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${today}' AND a.status='Present' AND ${fClauseAlias}`);
+    const presentToday = attRes[0]?.total || 0;
+
+    // Revenue
+    const feeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE ${fClause}`);
+    const totalRevenue = feeRes[0]?.total || 0;
+
+    // Expenses
+    let totalExpenses = 0;
+    try {
+      const expRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM expenses WHERE ${fClause}`);
+      totalExpenses = expRes[0]?.total || 0;
+    } catch(e) {} // table might not exist in some setups
+
+    // Today Fees
+    const todayFeeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE payment_date='${today}' AND ${fClause}`);
+    const todayFees = todayFeeRes[0]?.total || 0;
+
+    // Revenue Chart (Monthly)
+    const revData = Array(12).fill(0);
+    const revQ = await this.dataSource.query(`SELECT MONTH(payment_date) as m, SUM(amount) as total FROM fee_payments WHERE YEAR(payment_date) = YEAR(CURRENT_DATE) AND ${fClause} GROUP BY MONTH(payment_date)`);
+    revQ.forEach(r => { if(r.m >= 1 && r.m <= 12) revData[r.m - 1] = Number(r.total); });
+
+    // Course Distribution Chart
+    const courseLabels: string[] = [];
+    const courseData: number[] = [];
+    const crsQ = await this.dataSource.query(`SELECT c.course_name, COUNT(s.id) as total FROM courses c LEFT JOIN students s ON c.id = s.course_id WHERE s.status='Active' AND ${fClauseAlias} GROUP BY c.id`);
+    crsQ.forEach((r: any) => {
+      courseLabels.push(r.course_name);
+      courseData.push(Number(r.total));
+    });
+
+    // Notices (News)
+    let news: any[] = [];
+    try {
+      news = await this.dataSource.query(`SELECT * FROM notices WHERE ${isSuperAdmin ? '1=1' : `(${fClause} OR (franchise_id=1 AND is_global=1))`} ORDER BY notice_date DESC, id DESC LIMIT 10`);
+    } catch(e) {}
+
+    // Notifications logic
+    let notifCount = 0;
+    
+    let pendingAdmCount = 0;
+    try {
+      const admQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM students WHERE status='Pending' AND ${fClause}`);
+      pendingAdmCount = Number(admQ[0]?.c || 0);
+      notifCount += pendingAdmCount;
+    } catch(e){}
+
+    let pendingEnqCount = 0;
+    try {
+      const enqQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM enquiries WHERE status='Pending' AND ${fClause}`);
+      pendingEnqCount = Number(enqQ[0]?.c || 0);
+      notifCount += pendingEnqCount;
+    } catch(e){}
+    
+    let pendingQueriesCount = 0;
+    try {
+      const queryQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM student_queries WHERE status='Pending' AND ${fClause}`);
+      pendingQueriesCount = Number(queryQ[0]?.c || 0);
+      notifCount += pendingQueriesCount;
+    } catch(e){}
+
+    let pendingFeesCount = 0;
+    try {
+      const feeQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM fee_requests WHERE status='Pending' AND ${fClause}`);
+      pendingFeesCount = Number(feeQ[0]?.c || 0);
+      notifCount += pendingFeesCount;
+    } catch(e){}
+
+    let pendingSubCount = 0;
+    let pendingWaCount = 0;
+    let pendingDemoCount = 0;
+    if(isSuperAdmin) {
+      try {
+        const subQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM franchise_payments WHERE status='Pending'`);
+        pendingSubCount = Number(subQ[0]?.c || 0);
+        notifCount += pendingSubCount;
+      } catch(e){}
+      try {
+        const waQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM wa_recharge_requests WHERE status='Pending'`);
+        pendingWaCount = Number(waQ[0]?.c || 0);
+        notifCount += pendingWaCount;
+      } catch(e){}
+      try {
+        const demoQ = await this.dataSource.query(`SELECT COUNT(id) as c FROM erp_demo_requests WHERE status='Pending'`);
+        const franEnq = await this.dataSource.query(`SELECT COUNT(id) as c FROM franchise_enquiries WHERE status='Pending'`);
+        pendingDemoCount = Number(demoQ[0]?.c || 0) + Number(franEnq[0]?.c || 0);
+        notifCount += pendingDemoCount;
+      } catch(e){}
+    }
+
+    // Recent Onboardings
+    let onboardings: any[] = [];
+    try {
+      onboardings = await this.dataSource.query(`SELECT s.name, c.course_name FROM students s LEFT JOIN courses c ON s.course_id = c.id WHERE ${fClauseAlias} ORDER BY s.id DESC LIMIT 5`);
+    } catch(e) {}
+
+    // Latest Transactions
+    let transactions: any[] = [];
+    try {
+      transactions = await this.dataSource.query(`SELECT f.amount, s.name, f.payment_date as fee_date FROM fee_payments f JOIN students s ON f.student_id = s.id WHERE ${fClauseAlias} ORDER BY f.id DESC LIMIT 5`);
+    } catch(e) {}
+
+    // AI Risk Engine (Basic implementation, ideally needs complex JOIN for att % and dues)
+    let riskEngine: any[] = [];
+    try {
+      // Just returning recent active students for now as placeholder for Risk Engine, 
+      // actual calculation requires iterating over attendance and fees per student
+      riskEngine = await this.dataSource.query(`SELECT s.id, s.name, s.phone, c.course_name, c.fees as total_fee FROM students s LEFT JOIN courses c ON s.course_id = c.id WHERE s.status='Active' AND ${fClauseAlias} LIMIT 5`);
+    } catch(e) {}
+
+    return {
+      kpi: {
+        totalStudents: Number(totalStudents),
+        totalStaff: Number(totalStaff),
+        presentToday: Number(presentToday),
+        totalRevenue: Number(totalRevenue),
+        totalExpenses: Number(totalExpenses),
+        todayFees: Number(todayFees),
+      },
+      charts: {
+        revenue: { data: revData },
+        courses: { labels: courseLabels, data: courseData },
+      },
+      news,
+      onboardings,
+      transactions,
+      riskEngine,
+      support: {
+        phone: '918433010182',
+        name: 'Technical Assistance & Queries',
+        timing: '11:00 AM - 6:00 PM (Mon-Fri)'
+      },
+      notifications: {
+        total: notifCount,
+        pendingAdmissions: pendingAdmCount,
+        pendingEnquiries: pendingEnqCount,
+        pendingQueries: pendingQueriesCount,
+        pendingFees: pendingFeesCount,
+        pendingSubscriptions: pendingSubCount,
+        pendingWhatsapp: pendingWaCount,
+        pendingDemo: pendingDemoCount,
+      }
+    };
+  }
+}

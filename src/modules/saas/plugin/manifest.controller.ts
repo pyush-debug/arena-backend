@@ -119,362 +119,162 @@ const PORTAL_MENUS: Record<string, PortalMenu[]> = {
   ],
 
   school: [
+    { title: 'Dashboard', icon: 'dashboard', route: '/school/dashboard', roles: ['*'] },
+    { title: 'Analytics', icon: 'insights', route: '/school/analytics', apiEndpoint: '/v1/dynamic/analytics', roles: ['admin'] },
+    { title: 'Manage Courses', icon: 'menu_book', route: '/school/courses', apiEndpoint: '/v1/dynamic/courses', roles: ['admin'] },
+    { title: 'Auto Marketing Studio', icon: 'campaign', route: '/school/auto-marketing', apiEndpoint: '/v1/dynamic/marketing', roles: ['admin'] },
     {
-      title: 'Analytics',
-      icon: 'insights',
-      route: '/school/analytics',
-      apiEndpoint: '/v1/dynamic/analytics',
-      roles: ['admin'],
-    },
-    {
-      title: 'Manage Courses',
-      icon: 'menu_book',
-      route: '/school/courses',
-      apiEndpoint: '/v1/dynamic/courses',
-      roles: ['admin'],
-    },
-    {
-      title: 'Auto Marketing Studio',
-      icon: 'campaign',
-      route: '/school/auto-marketing',
-      apiEndpoint: '/v1/dynamic/marketing',
-      roles: ['admin'],
-    },
-    {
-      title: 'Academic',
-      icon: 'school',
-      route: '/school/academic-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
+      title: 'Academic', icon: 'school', route: '/school/academic-group', roles: ['admin', 'staff', 'student', 'parent'],
       children: [
-        { title: 'Notice', icon: 'notifications', route: '/school/notice', apiEndpoint: '/v1/dynamic/notices', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Time Table', icon: 'schedule', route: '/school/timetable', apiEndpoint: '/v1/dynamic/time_table', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Schedule', icon: 'calendar_month', route: '/school/schedule', apiEndpoint: '/v1/dynamic/course_schedules', roles: ['admin', 'staff'] },
-        { title: 'Syllabus', icon: 'menu_book', route: '/school/syllabus', apiEndpoint: '/v1/dynamic/syllabus', roles: ['admin', 'staff', 'student'] },
-        { title: 'Upload Notes', icon: 'cloud_upload', route: '/school/upload-notes', apiEndpoint: '/v1/dynamic/notes', roles: ['admin', 'staff'] },
-        { title: 'Upload Sheet', icon: 'upload_file', route: '/school/upload-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['admin', 'staff'] },
-        { title: 'Create Sheet', icon: 'note_add', route: '/school/create-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['admin', 'staff'] },
-        { title: 'Holiday List', icon: 'event', route: '/school/holidays', apiEndpoint: '/v1/dynamic/holidays', roles: ['admin', 'staff', 'student'] },
-        { title: 'Calendar', icon: 'event_note', route: '/school/calendar', apiEndpoint: '/v1/dynamic/calendar', roles: ['admin', 'staff', 'student'] },
-        { title: 'Home Work', icon: 'assignment', route: '/school/homework', apiEndpoint: '/v1/dynamic/homework', roles: ['admin', 'staff', 'student'] },
-        { title: 'Gallery', icon: 'photo_library', route: '/school/gallery', apiEndpoint: '/v1/dynamic/photo_gallery', roles: ['admin', 'staff', 'student'] },
+        { title: 'Notice', icon: 'notifications', route: '/school/notice', apiEndpoint: '/v1/dynamic/notices', roles: ['*'] },
+        { title: 'Time Table', icon: 'schedule', route: '/school/timetable', apiEndpoint: '/v1/dynamic/time_table', roles: ['*'] },
+        { title: 'Schedule', icon: 'calendar_month', route: '/school/schedule', apiEndpoint: '/v1/dynamic/course_schedules', roles: ['*'] },
+        { title: 'Syllabus', icon: 'menu_book', route: '/school/syllabus', apiEndpoint: '/v1/dynamic/syllabus', roles: ['*'] },
+        { title: 'Upload Notes', icon: 'cloud_upload', route: '/school/upload-notes', apiEndpoint: '/v1/dynamic/notes', roles: ['*'] },
+        { title: 'Upload Sheet', icon: 'upload_file', route: '/school/upload-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['*'] },
+        { title: 'Create Sheet', icon: 'note_add', route: '/school/create-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['*'] },
+        { title: 'Holiday List', icon: 'event', route: '/school/holidays', apiEndpoint: '/v1/dynamic/holidays', roles: ['*'] },
+        { title: 'Calendar', icon: 'event_note', route: '/school/calendar', apiEndpoint: '/v1/dynamic/calendar', roles: ['*'] },
+        { title: 'Home Work', icon: 'assignment', route: '/school/homework', apiEndpoint: '/v1/dynamic/homework', roles: ['*'] },
+        { title: 'Gallery', icon: 'photo_library', route: '/school/gallery', apiEndpoint: '/v1/dynamic/photo_gallery', roles: ['*'] },
+      ]
+    },
+    { title: 'Library Desk', icon: 'local_library', route: '/school/library', apiEndpoint: '/v1/dynamic/library', roles: ['*'] },
+    {
+      title: 'Staff Desk', icon: 'badge', route: '/school/staff-group', roles: ['admin'],
+      children: [
+        { title: 'View Staff', icon: 'people', route: '/school/staff/view', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Add Staff', icon: 'person_add', route: '/school/staff/add', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Generate Salary', icon: 'payments', route: '/school/staff/salary', apiEndpoint: '/v1/dynamic/salary', roles: ['*'] },
+        { title: 'Id Cards', icon: 'badge', route: '/school/staff/idcards', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Attendance', icon: 'how_to_reg', route: '/school/staff/attendance', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['*'] },
+        { title: 'Report', icon: 'assessment', route: '/school/staff/report', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['*'] },
+        { title: 'Permissions', icon: 'security', route: '/school/staff/permissions', apiEndpoint: '/v1/dynamic/permissions', roles: ['*'] },
+        { title: 'Certificate', icon: 'card_membership', route: '/school/staff/certificate', apiEndpoint: '/v1/dynamic/certificates', roles: ['*'] },
       ]
     },
     {
-      title: 'Library Desk',
-      icon: 'local_library',
-      route: '/school/library',
-      apiEndpoint: '/v1/dynamic/library',
-      roles: ['admin', 'staff', 'student'],
-    },
-    {
-      title: 'Staff Desk',
-      icon: 'badge',
-      route: '/school/staff-group',
-      roles: ['admin'],
+      title: 'Students', icon: 'groups', route: '/school/students-group', roles: ['admin', 'staff'],
       children: [
-        { title: 'View Staff', icon: 'people', route: '/school/staff/view', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Add Staff', icon: 'person_add', route: '/school/staff/add', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Generate Salary', icon: 'payments', route: '/school/staff/salary', apiEndpoint: '/v1/dynamic/salary', roles: ['admin'] },
-        { title: 'Id Cards', icon: 'badge', route: '/school/staff/idcards', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Attendance', icon: 'how_to_reg', route: '/school/staff/attendance', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['admin'] },
-        { title: 'Report', icon: 'assessment', route: '/school/staff/report', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['admin'] },
-        { title: 'Permissions', icon: 'security', route: '/school/staff/permissions', apiEndpoint: '/v1/dynamic/permissions', roles: ['admin'] },
-        { title: 'Certificate', icon: 'card_membership', route: '/school/staff/certificate', apiEndpoint: '/v1/dynamic/certificates', roles: ['admin'] },
+        { title: 'Add Student', icon: 'person_add', route: '/school/students/add', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Bulk Import', icon: 'file_upload', route: '/school/students/import', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'View Students', icon: 'visibility', route: '/school/students/view', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Promote Class', icon: 'upgrade', route: '/school/students/promote', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'School TC', icon: 'description', route: '/school/students/tc', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Session Archives', icon: 'archive', route: '/school/students/archives', apiEndpoint: '/v1/dynamic/sessions', roles: ['*'] },
+        { title: 'Magic Parent Link', icon: 'link', route: '/school/students/parent-link', apiEndpoint: '/v1/dynamic/parents', roles: ['*'] },
+        { title: 'Face Registration', icon: 'face', route: '/school/students/face', apiEndpoint: '/v1/dynamic/face', roles: ['*'] },
+        { title: 'Admission Receipt', icon: 'receipt', route: '/school/students/receipt', apiEndpoint: '/v1/dynamic/receipts', roles: ['*'] },
+        { title: 'Pending Admissions', icon: 'pending_actions', route: '/school/students/pending', apiEndpoint: '/v1/dynamic/admission_requests', roles: ['*'] },
+      ]
+    },
+    { title: 'Attendance Scanner', icon: 'qr_code_scanner', route: '/school/attendance/scanner', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+    {
+      title: 'Attendance Desk', icon: 'how_to_reg', route: '/school/attendance-group', roles: ['admin', 'staff'],
+      children: [
+        { title: 'Attendance', icon: 'how_to_reg', route: '/school/attendance/mark', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Report', icon: 'assessment', route: '/school/attendance/report', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Daily Report', icon: 'fact_check', route: '/school/attendance/daily', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Stats', icon: 'query_stats', route: '/school/attendance/stats', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
       ]
     },
     {
-      title: 'Students',
-      icon: 'school',
-      route: '/school/students-group',
-      roles: ['admin', 'staff', 'parent'],
+      title: 'Fee Desk', icon: 'payments', route: '/school/fees-group', roles: ['admin'],
       children: [
-        { title: 'Add Student', icon: 'person_add', route: '/school/students/add', apiEndpoint: '/v1/dynamic/students', roles: ['admin', 'staff'] },
-        { title: 'Bulk Import', icon: 'file_upload', route: '/school/students/import', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'View Students', icon: 'groups', route: '/school/students/view', apiEndpoint: '/v1/dynamic/students', roles: ['admin', 'staff', 'parent'] },
-        { title: 'Promote Class', icon: 'upgrade', route: '/school/students/promote', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'School TC', icon: 'description', route: '/school/students/tc', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'Session Archives', icon: 'archive', route: '/school/students/archives', apiEndpoint: '/v1/dynamic/sessions', roles: ['admin'] },
-        { title: 'Magic Parent Link', icon: 'link', route: '/school/students/parent-link', apiEndpoint: '/v1/dynamic/parents', roles: ['admin'] },
-        { title: 'Face Registration', icon: 'face', route: '/school/students/face', apiEndpoint: '/v1/dynamic/face', roles: ['admin'] },
-        { title: 'Admission Receipt', icon: 'receipt', route: '/school/students/receipt', apiEndpoint: '/v1/dynamic/receipts', roles: ['admin'] },
-        { title: 'Pending Admissions', icon: 'pending_actions', route: '/school/students/pending', apiEndpoint: '/v1/dynamic/admission_requests', roles: ['admin'] },
-        { title: 'Web Enquiries', icon: 'contact_mail', route: '/school/students/enquiries', apiEndpoint: '/v1/dynamic/enquiries', roles: ['admin'] },
-        { title: 'Student Queries', icon: 'help_outline', route: '/school/students/queries', apiEndpoint: '/v1/dynamic/queries', roles: ['admin', 'staff'] },
+        { title: 'Deposit', icon: 'account_balance_wallet', route: '/school/fees/take', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Receipt View', icon: 'receipt', route: '/school/fees/receipts', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Collection', icon: 'account_balance', route: '/school/fees/collection', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Head Wise', icon: 'category', route: '/school/fees/head', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Due Report', icon: 'warning', route: '/school/fees/due', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Auto Demand', icon: 'bolt', route: '/school/fees/demand', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
       ]
     },
-    {
-      title: 'Attendance Scanner',
-      icon: 'qr_code_scanner',
-      route: '/school/attendance/scanner',
-      apiEndpoint: '/v1/dynamic/attendance',
-      roles: ['admin', 'staff'],
-    },
-    {
-      title: 'Attendance Desk',
-      icon: 'how_to_reg',
-      route: '/school/attendance-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
-      children: [
-        { title: 'Report', icon: 'assessment', route: '/school/attendance/report', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Mark Daily', icon: 'fact_check', route: '/school/attendance/mark', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff'] },
-        { title: 'Quick Check', icon: 'check_circle', route: '/school/attendance/quick', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff'] },
-      ]
-    },
-    {
-      title: 'Exams & Marks',
-      icon: 'quiz',
-      route: '/school/exams-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
-      children: [
-        { title: 'Control Desk', icon: 'admin_panel_settings', route: '/school/exams/control', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'View Marks', icon: 'visibility', route: '/school/exams/view', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Enter Marks', icon: 'edit', route: '/school/exams/enter', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'Print Admit', icon: 'print', route: '/school/exams/admit', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'Print Progress', icon: 'print', route: '/school/exams/progress', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-      ]
-    },
-    {
-      title: 'Fee Desk',
-      icon: 'payments',
-      route: '/school/fees-group',
-      roles: ['admin', 'student', 'parent'],
-      children: [
-        { title: 'Take Fee', icon: 'account_balance_wallet', route: '/school/fees/take', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'View Receipts', icon: 'receipt', route: '/school/fees/receipts', apiEndpoint: '/v1/dynamic/fees', roles: ['admin', 'student', 'parent'] },
-        { title: 'Today Collection', icon: 'today', route: '/school/fees/today', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Head Collection', icon: 'account_balance', route: '/school/fees/head', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Defaulters List', icon: 'warning', route: '/school/fees/defaulters', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Due Demands', icon: 'request_quote', route: '/school/fees/demands', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Discount Console', icon: 'discount', route: '/school/fees/discount', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Scholarship Coupons', icon: 'card_giftcard', route: '/school/fees/coupons', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Online Requests', icon: 'language', route: '/school/fees/online', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-      ]
-    },
-    {
-      title: 'Placement Cell',
-      icon: 'work',
-      route: '/school/placement-group',
-      roles: ['admin', 'student'],
-      children: [
-        { title: 'Post Job', icon: 'post_add', route: '/school/placement/post', apiEndpoint: '/v1/dynamic/jobs', roles: ['admin'] },
-        { title: 'Applications', icon: 'description', route: '/school/placement/applications', apiEndpoint: '/v1/dynamic/jobs', roles: ['admin', 'student'] },
-      ]
-    },
-    {
-      title: 'Expense Desk',
-      icon: 'receipt_long',
-      route: '/school/expenses',
-      apiEndpoint: '/v1/dynamic/expenses',
-      roles: ['admin'],
-    },
-    {
-      title: 'Subscriptions',
-      icon: 'subscriptions',
-      route: '/school/subscriptions',
-      apiEndpoint: '/v1/dynamic/subscriptions',
-      roles: ['admin'],
-    },
-    {
-      title: 'Web Pages',
-      icon: 'web',
-      route: '/school/webpages',
-      apiEndpoint: '/v1/dynamic/webpages',
-      roles: ['admin'],
-    },
-    {
-      title: 'Settings',
-      icon: 'settings',
-      route: '/school/settings',
-      apiEndpoint: '/v1/dynamic/settings',
-      roles: ['admin'],
-    },
+    { title: 'Expense Desk', icon: 'receipt_long', route: '/school/expenses', apiEndpoint: '/v1/dynamic/expenses', roles: ['admin'] },
+    { title: 'Subscriptions', icon: 'subscriptions', route: '/school/subscriptions', apiEndpoint: '/v1/dynamic/subscriptions', roles: ['admin'] },
+    { title: 'Web Pages', icon: 'web', route: '/school/webpages', apiEndpoint: '/v1/dynamic/webpages', roles: ['admin'] },
+    { title: 'Settings', icon: 'settings', route: '/school/settings', apiEndpoint: '/v1/dynamic/settings', roles: ['admin'] }
   ],
 
   institute: [
+    { title: 'Dashboard', icon: 'dashboard', route: '/institute/dashboard', roles: ['*'] },
+    { title: 'Analytics', icon: 'insights', route: '/institute/analytics', apiEndpoint: '/v1/dynamic/analytics', roles: ['admin'] },
+    { title: 'Manage Courses', icon: 'menu_book', route: '/institute/courses', apiEndpoint: '/v1/dynamic/courses', roles: ['admin'] },
+    { title: 'Auto Marketing Studio', icon: 'campaign', route: '/institute/auto-marketing', apiEndpoint: '/v1/dynamic/marketing', roles: ['admin'] },
     {
-      title: 'Analytics',
-      icon: 'insights',
-      route: '/institute/analytics',
-      apiEndpoint: '/v1/dynamic/analytics',
-      roles: ['admin'],
-    },
-    {
-      title: 'Manage Courses',
-      icon: 'menu_book',
-      route: '/institute/courses',
-      apiEndpoint: '/v1/dynamic/courses',
-      roles: ['admin'],
-    },
-    {
-      title: 'Auto Marketing Studio',
-      icon: 'campaign',
-      route: '/institute/auto-marketing',
-      apiEndpoint: '/v1/dynamic/marketing',
-      roles: ['admin'],
-    },
-    {
-      title: 'Academic',
-      icon: 'school',
-      route: '/institute/academic-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
+      title: 'Academic', icon: 'school', route: '/institute/academic-group', roles: ['admin', 'staff', 'student', 'parent'],
       children: [
-        { title: 'Notice', icon: 'notifications', route: '/institute/notice', apiEndpoint: '/v1/dynamic/notices', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Time Table', icon: 'schedule', route: '/institute/timetable', apiEndpoint: '/v1/dynamic/time_table', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Schedule', icon: 'calendar_month', route: '/institute/schedule', apiEndpoint: '/v1/dynamic/course_schedules', roles: ['admin', 'staff'] },
-        { title: 'Syllabus', icon: 'menu_book', route: '/institute/syllabus', apiEndpoint: '/v1/dynamic/syllabus', roles: ['admin', 'staff', 'student'] },
-        { title: 'Upload Notes', icon: 'cloud_upload', route: '/institute/upload-notes', apiEndpoint: '/v1/dynamic/notes', roles: ['admin', 'staff'] },
-        { title: 'Upload Sheet', icon: 'upload_file', route: '/institute/upload-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['admin', 'staff'] },
-        { title: 'Create Sheet', icon: 'note_add', route: '/institute/create-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['admin', 'staff'] },
-        { title: 'Holiday List', icon: 'event', route: '/institute/holidays', apiEndpoint: '/v1/dynamic/holidays', roles: ['admin', 'staff', 'student'] },
-        { title: 'Calendar', icon: 'event_note', route: '/institute/calendar', apiEndpoint: '/v1/dynamic/calendar', roles: ['admin', 'staff', 'student'] },
-        { title: 'Home Work', icon: 'assignment', route: '/institute/homework', apiEndpoint: '/v1/dynamic/homework', roles: ['admin', 'staff', 'student'] },
-        { title: 'Gallery', icon: 'photo_library', route: '/institute/gallery', apiEndpoint: '/v1/dynamic/photo_gallery', roles: ['admin', 'staff', 'student'] },
+        { title: 'Notice', icon: 'notifications', route: '/institute/notice', apiEndpoint: '/v1/dynamic/notices', roles: ['*'] },
+        { title: 'Time Table', icon: 'schedule', route: '/institute/timetable', apiEndpoint: '/v1/dynamic/time_table', roles: ['*'] },
+        { title: 'Schedule', icon: 'calendar_month', route: '/institute/schedule', apiEndpoint: '/v1/dynamic/course_schedules', roles: ['*'] },
+        { title: 'Syllabus', icon: 'menu_book', route: '/institute/syllabus', apiEndpoint: '/v1/dynamic/syllabus', roles: ['*'] },
+        { title: 'Upload Notes', icon: 'cloud_upload', route: '/institute/upload-notes', apiEndpoint: '/v1/dynamic/notes', roles: ['*'] },
+        { title: 'Upload Sheet', icon: 'upload_file', route: '/institute/upload-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['*'] },
+        { title: 'Create Sheet', icon: 'note_add', route: '/institute/create-sheet', apiEndpoint: '/v1/dynamic/sheets', roles: ['*'] },
+        { title: 'Holiday List', icon: 'event', route: '/institute/holidays', apiEndpoint: '/v1/dynamic/holidays', roles: ['*'] },
+        { title: 'Calendar', icon: 'event_note', route: '/institute/calendar', apiEndpoint: '/v1/dynamic/calendar', roles: ['*'] },
+        { title: 'Home Work', icon: 'assignment', route: '/institute/homework', apiEndpoint: '/v1/dynamic/homework', roles: ['*'] },
+        { title: 'Gallery', icon: 'photo_library', route: '/institute/gallery', apiEndpoint: '/v1/dynamic/photo_gallery', roles: ['*'] },
+      ]
+    },
+    { title: 'Library Desk', icon: 'local_library', route: '/institute/library', apiEndpoint: '/v1/dynamic/library', roles: ['*'] },
+    {
+      title: 'Staff Desk', icon: 'badge', route: '/institute/staff-group', roles: ['admin'],
+      children: [
+        { title: 'View Staff', icon: 'people', route: '/institute/staff/view', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Add Staff', icon: 'person_add', route: '/institute/staff/add', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Generate Salary', icon: 'payments', route: '/institute/staff/salary', apiEndpoint: '/v1/dynamic/salary', roles: ['*'] },
+        { title: 'Id Cards', icon: 'badge', route: '/institute/staff/idcards', apiEndpoint: '/v1/dynamic/staff', roles: ['*'] },
+        { title: 'Attendance', icon: 'how_to_reg', route: '/institute/staff/attendance', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['*'] },
+        { title: 'Report', icon: 'assessment', route: '/institute/staff/report', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['*'] },
+        { title: 'Permissions', icon: 'security', route: '/institute/staff/permissions', apiEndpoint: '/v1/dynamic/permissions', roles: ['*'] },
+        { title: 'Certificate', icon: 'card_membership', route: '/institute/staff/certificate', apiEndpoint: '/v1/dynamic/certificates', roles: ['*'] },
       ]
     },
     {
-      title: 'Library Desk',
-      icon: 'local_library',
-      route: '/institute/library',
-      apiEndpoint: '/v1/dynamic/library',
-      roles: ['admin', 'staff', 'student'],
-    },
-    {
-      title: 'Staff Desk',
-      icon: 'badge',
-      route: '/institute/staff-group',
-      roles: ['admin'],
+      title: 'Students', icon: 'groups', route: '/institute/students-group', roles: ['admin', 'staff'],
       children: [
-        { title: 'View Staff', icon: 'people', route: '/institute/staff/view', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Add Staff', icon: 'person_add', route: '/institute/staff/add', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Generate Salary', icon: 'payments', route: '/institute/staff/salary', apiEndpoint: '/v1/dynamic/salary', roles: ['admin'] },
-        { title: 'Id Cards', icon: 'badge', route: '/institute/staff/idcards', apiEndpoint: '/v1/dynamic/staff', roles: ['admin'] },
-        { title: 'Attendance', icon: 'how_to_reg', route: '/institute/staff/attendance', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['admin'] },
-        { title: 'Report', icon: 'assessment', route: '/institute/staff/report', apiEndpoint: '/v1/dynamic/staff_attendance', roles: ['admin'] },
-        { title: 'Permissions', icon: 'security', route: '/institute/staff/permissions', apiEndpoint: '/v1/dynamic/permissions', roles: ['admin'] },
-        { title: 'Certificate', icon: 'card_membership', route: '/institute/staff/certificate', apiEndpoint: '/v1/dynamic/certificates', roles: ['admin'] },
+        { title: 'Add Student', icon: 'person_add', route: '/institute/students/add', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Bulk Import (Excel)', icon: 'file_upload', route: '/institute/students/import', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'View Students', icon: 'visibility', route: '/institute/students/view', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Promote Class', icon: 'upgrade', route: '/institute/students/promote', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'School TC', icon: 'description', route: '/institute/students/tc', apiEndpoint: '/v1/dynamic/students', roles: ['*'] },
+        { title: 'Session Archives', icon: 'archive', route: '/institute/students/archives', apiEndpoint: '/v1/dynamic/sessions', roles: ['*'] },
+        { title: 'Magic Parent Link', icon: 'link', route: '/institute/students/parent-link', apiEndpoint: '/v1/dynamic/parents', roles: ['*'] },
+        { title: 'Face Registration', icon: 'face', route: '/institute/students/face', apiEndpoint: '/v1/dynamic/face', roles: ['*'] },
+        { title: 'Admission Receipt', icon: 'receipt', route: '/institute/students/receipt', apiEndpoint: '/v1/dynamic/receipts', roles: ['*'] },
+        { title: 'Pending Admissions', icon: 'pending_actions', route: '/institute/students/pending', apiEndpoint: '/v1/dynamic/admission_requests', roles: ['*'] },
+        { title: 'Web Enquiries (Leads)', icon: 'contact_mail', route: '/institute/students/enquiries', apiEndpoint: '/v1/dynamic/enquiries', roles: ['*'] },
+        { title: 'Student Help Desk', icon: 'help', route: '/institute/students/helpdesk', apiEndpoint: '/v1/dynamic/student_queries', roles: ['*'] },
       ]
     },
     {
-      title: 'Students',
-      icon: 'school',
-      route: '/institute/students-group',
-      roles: ['admin', 'staff', 'parent'],
+      title: 'Attendance', icon: 'how_to_reg', route: '/institute/attendance-group', roles: ['admin', 'staff'],
       children: [
-        { title: 'Add Student', icon: 'person_add', route: '/institute/students/add', apiEndpoint: '/v1/dynamic/students', roles: ['admin', 'staff'] },
-        { title: 'Bulk Import', icon: 'file_upload', route: '/institute/students/import', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'View Students', icon: 'groups', route: '/institute/students/view', apiEndpoint: '/v1/dynamic/students', roles: ['admin', 'staff', 'parent'] },
-        { title: 'Promote Class', icon: 'upgrade', route: '/institute/students/promote', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'School TC', icon: 'description', route: '/institute/students/tc', apiEndpoint: '/v1/dynamic/students', roles: ['admin'] },
-        { title: 'Session Archives', icon: 'archive', route: '/institute/students/archives', apiEndpoint: '/v1/dynamic/sessions', roles: ['admin'] },
-        { title: 'Magic Parent Link', icon: 'link', route: '/institute/students/parent-link', apiEndpoint: '/v1/dynamic/parents', roles: ['admin'] },
-        { title: 'Face Registration', icon: 'face', route: '/institute/students/face', apiEndpoint: '/v1/dynamic/face', roles: ['admin'] },
-        { title: 'Admission Receipt', icon: 'receipt', route: '/institute/students/receipt', apiEndpoint: '/v1/dynamic/receipts', roles: ['admin'] },
-        { title: 'Pending Admissions', icon: 'pending_actions', route: '/institute/students/pending', apiEndpoint: '/v1/dynamic/admission_requests', roles: ['admin'] },
-        { title: 'Web Enquiries', icon: 'contact_mail', route: '/institute/students/enquiries', apiEndpoint: '/v1/dynamic/enquiries', roles: ['admin'] },
-        { title: 'Student Queries', icon: 'help_outline', route: '/institute/students/queries', apiEndpoint: '/v1/dynamic/queries', roles: ['admin', 'staff'] },
+        { title: 'Attendance', icon: 'how_to_reg', route: '/institute/attendance/mark', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Auto QR Scanner', icon: 'qr_code_scanner', route: '/institute/attendance/scanner', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Report', icon: 'assessment', route: '/institute/attendance/report', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Daily Report', icon: 'fact_check', route: '/institute/attendance/daily', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+        { title: 'Stats', icon: 'query_stats', route: '/institute/attendance/stats', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
       ]
     },
     {
-      title: 'Attendance Scanner',
-      icon: 'qr_code_scanner',
-      route: '/institute/attendance/scanner',
-      apiEndpoint: '/v1/dynamic/attendance',
-      roles: ['admin', 'staff'],
-    },
-    {
-      title: 'Attendance Desk',
-      icon: 'how_to_reg',
-      route: '/institute/attendance-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
+      title: 'Fee Desk', icon: 'payments', route: '/institute/fees-group', roles: ['admin'],
       children: [
-        { title: 'Report', icon: 'assessment', route: '/institute/attendance/report', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Mark Daily', icon: 'fact_check', route: '/institute/attendance/mark', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff'] },
-        { title: 'Quick Check', icon: 'check_circle', route: '/institute/attendance/quick', apiEndpoint: '/v1/dynamic/attendance', roles: ['admin', 'staff'] },
+        { title: 'Deposit', icon: 'account_balance_wallet', route: '/institute/fees/take', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Receipt View', icon: 'receipt', route: '/institute/fees/receipts', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Collection', icon: 'account_balance', route: '/institute/fees/collection', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Head Wise', icon: 'category', route: '/institute/fees/head', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Due Report', icon: 'warning', route: '/institute/fees/due', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Auto Demand', icon: 'bolt', route: '/institute/fees/demand', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Discount', icon: 'money_off', route: '/institute/fees/discount', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Verify XP Coupon', icon: 'card_giftcard', route: '/institute/fees/coupon', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
+        { title: 'Requests', icon: 'request_page', route: '/institute/fees/requests', apiEndpoint: '/v1/dynamic/fees', roles: ['*'] },
       ]
     },
-    {
-      title: 'Exams & Marks',
-      icon: 'quiz',
-      route: '/institute/exams-group',
-      roles: ['admin', 'staff', 'student', 'parent'],
-      children: [
-        { title: 'Control Desk', icon: 'admin_panel_settings', route: '/institute/exams/control', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'View Marks', icon: 'visibility', route: '/institute/exams/view', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff', 'student', 'parent'] },
-        { title: 'Enter Marks', icon: 'edit', route: '/institute/exams/enter', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'Print Admit', icon: 'print', route: '/institute/exams/admit', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-        { title: 'Print Progress', icon: 'print', route: '/institute/exams/progress', apiEndpoint: '/v1/dynamic/exams', roles: ['admin', 'staff'] },
-      ]
-    },
-    {
-      title: 'Fee Desk',
-      icon: 'payments',
-      route: '/institute/fees-group',
-      roles: ['admin', 'student', 'parent'],
-      children: [
-        { title: 'Take Fee', icon: 'account_balance_wallet', route: '/institute/fees/take', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'View Receipts', icon: 'receipt', route: '/institute/fees/receipts', apiEndpoint: '/v1/dynamic/fees', roles: ['admin', 'student', 'parent'] },
-        { title: 'Today Collection', icon: 'today', route: '/institute/fees/today', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Head Collection', icon: 'account_balance', route: '/institute/fees/head', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Defaulters List', icon: 'warning', route: '/institute/fees/defaulters', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Due Demands', icon: 'request_quote', route: '/institute/fees/demands', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Discount Console', icon: 'discount', route: '/institute/fees/discount', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Scholarship Coupons', icon: 'card_giftcard', route: '/institute/fees/coupons', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-        { title: 'Online Requests', icon: 'language', route: '/institute/fees/online', apiEndpoint: '/v1/dynamic/fees', roles: ['admin'] },
-      ]
-    },
-    {
-      title: 'Gamification',
-      icon: 'sports_esports',
-      route: '/institute/gamification-group',
-      roles: ['admin', 'student'],
-      children: [
-        { title: 'Create AI Quiz', icon: 'psychology', route: '/institute/gamification/ai-quiz', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin'] },
-        { title: 'Question Bank', icon: 'library_books', route: '/institute/gamification/questions', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin'] },
-        { title: 'Typing Test', icon: 'keyboard', route: '/institute/gamification/typing', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin', 'student'] },
-        { title: 'Leaderboard', icon: 'leaderboard', route: '/institute/gamification/leaderboard', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin', 'student'] },
-        { title: 'Arena Battles', icon: 'sports_mma', route: '/institute/gamification/battles', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin', 'student'] },
-      ]
-    },
-    {
-      title: 'Placement Cell',
-      icon: 'work',
-      route: '/institute/placement-group',
-      roles: ['admin', 'student'],
-      children: [
-        { title: 'Post Job', icon: 'post_add', route: '/institute/placement/post', apiEndpoint: '/v1/dynamic/jobs', roles: ['admin'] },
-        { title: 'Applications', icon: 'description', route: '/institute/placement/applications', apiEndpoint: '/v1/dynamic/jobs', roles: ['admin', 'student'] },
-      ]
-    },
-    {
-      title: 'Expense Desk',
-      icon: 'receipt_long',
-      route: '/institute/expenses',
-      apiEndpoint: '/v1/dynamic/expenses',
-      roles: ['admin'],
-    },
-    {
-      title: 'Subscriptions',
-      icon: 'subscriptions',
-      route: '/institute/subscriptions',
-      apiEndpoint: '/v1/dynamic/subscriptions',
-      roles: ['admin'],
-    },
-    {
-      title: 'Web Pages',
-      icon: 'web',
-      route: '/institute/webpages',
-      apiEndpoint: '/v1/dynamic/webpages',
-      roles: ['admin'],
-    },
-    {
-      title: 'Settings',
-      icon: 'settings',
-      route: '/institute/settings',
-      apiEndpoint: '/v1/dynamic/settings',
-      roles: ['admin'],
-    },
-  ],
-
+    { title: 'Transport Module', icon: 'directions_bus', route: '/institute/transport', apiEndpoint: '/v1/dynamic/transport', roles: ['admin'] },
+    { title: 'Arena Controls', icon: 'sports_esports', route: '/institute/gamification', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin'] },
+  ]
+,
   resort: [
     {
       title: 'Rooms & Types',
@@ -724,6 +524,27 @@ const PORTAL_WIDGETS: Record<string, PortalWidget[]> = {
       countTable: 'expenses',
       roles: ['admin'],
     },
+    {
+      type: 'charts_row',
+      title: 'Analytics',
+      icon: 'insights',
+      apiEndpoint: '',
+      roles: ['*'],
+    },
+    {
+      type: 'ai_risk_engine',
+      title: 'Risk Engine',
+      icon: 'smart_toy',
+      apiEndpoint: '',
+      roles: ['admin'],
+    },
+    {
+      type: 'data_tables_row',
+      title: 'Recent Activity',
+      icon: 'history',
+      apiEndpoint: '',
+      roles: ['*'],
+    },
   ],
 
   resort: [
@@ -815,12 +636,17 @@ export class ManifestController {
       activeModule !== 'arena' &&
       !available_modules.includes(activeModule)
     ) {
-      console.log(
-        `[MANIFEST] FORBIDDEN: User ${req.user.username} (role=${userRole}) tried to access module=${activeModule}, available=${JSON.stringify(available_modules)}`,
-      );
-      throw new ForbiddenException(
-        `Access denied: You do not have permission for the ${activeModule} portal.`,
-      );
+      // Emergency bypass for HQ Super Admins with older tokens
+      if ((userRole === 'super_admin' || userRole === 'admin' || accountType === 'admin') && activeModule === 'hq') {
+        available_modules.push('hq');
+      } else {
+        console.log(
+          `[MANIFEST] FORBIDDEN: User ${req.user.username} (role=${userRole}) tried to access module=${activeModule}, available=${JSON.stringify(available_modules)}`,
+        );
+        throw new ForbiddenException(
+          `Access denied: You do not have permission for the ${activeModule} portal.`,
+        );
+      }
     }
 
     // Default to first available module
@@ -851,7 +677,6 @@ export class ManifestController {
           const expiryDate = franchise.expiry_date
             ? new Date(franchise.expiry_date)
             : null;
-          // Force isExpired to false to prevent the red error paragraph from blocking the UI
           const isExpired = false;
 
           franchiseInfo = {
@@ -859,14 +684,14 @@ export class ManifestController {
             branch_name: franchise.branch_name,
             branch_code: franchise.branch_code,
             branch_type: franchise.branch_type || 'Computer Center',
-            logo: franchise.logo,
+            logo: franchise.logo ? `https://ictcomputereducation.com/uploads/${franchise.logo}` : null,
             theme_color: franchise.theme_color,
             plan_type: franchise.plan_type,
             isExpired: isExpired,
             expiryDate: franchise.expiry_date,
           };
 
-          customLogo = franchise.logo || 'arena_default_logo.png';
+          customLogo = franchiseInfo.logo;
           customTitle = franchise.branch_name || 'Arena OS';
         }
       } catch (e) {
@@ -874,14 +699,23 @@ export class ManifestController {
       }
     } else {
       // HQ user (admin table, no franchise)
-      customLogo = 'arena_hq_logo.png';
+      let hqLogo: string | null = null;
+      try {
+        const hqDataRows = await this.dataSource.query('SELECT logo_image FROM master_payment_info WHERE id=1');
+        const hqData = hqDataRows[0];
+        if (hqData && hqData.logo_image) {
+          hqLogo = `https://ictcomputereducation.com/uploads/${hqData.logo_image}`;
+        }
+      } catch(e) {}
+      
+      customLogo = hqLogo || 'arena_hq_logo.png';
       customTitle = 'Arena OS HQ';
       franchiseInfo = {
         id: 0,
         branch_name: 'Arena OS Headquarters',
         branch_code: 'HQ',
         branch_type: 'HQ',
-        logo: null,
+        logo: hqLogo,
         theme_color: '#FFD700',
         plan_type: 'Enterprise',
         isExpired: false,
@@ -900,12 +734,55 @@ export class ManifestController {
       }
     }
 
+    // Fetch dynamic permissions if the user is a normal staff
+    let allowedModules: string[] | null = null; // null means all allowed (admin)
+    if (accountType === 'user' && userRole.toLowerCase() !== 'admin' && userRole.toLowerCase() !== 'super_admin') {
+      try {
+        const perms = await this.dataSource.query(
+          'SELECT module_name FROM role_permissions WHERE franchise_id = ? AND role_name = ? AND is_allowed = 1',
+          [organization, userRole]
+        );
+        allowedModules = perms.map((p: any) => p.module_name.toLowerCase());
+        // Default modules that every staff needs
+        allowedModules!.push('dashboard');
+      } catch (e) {
+        allowedModules = [];
+      }
+    }
+
+    // Helper to map UI titles to DB module names
+    const titleToDbModule = (title: string): string => {
+      const t = title.toLowerCase();
+      if (t.includes('dashboard')) return 'dashboard';
+      if (t.includes('academic')) return 'academic';
+      if (t.includes('student')) return 'students';
+      if (t.includes('attendance')) return 'attendance';
+      if (t.includes('fee')) return 'fee_desk';
+      if (t.includes('expense')) return 'expenses';
+      if (t.includes('staff')) return 'staff_desk';
+      if (t.includes('library')) return 'library'; // Usually implicitly allowed if in menu
+      if (t.includes('setting')) return 'institute_setting';
+      if (t.includes('marketing')) return 'auto_marketing';
+      return t;
+    };
+
     // ── GENERATE PORTAL MENUS ──
     const portalMenus = PORTAL_MENUS[activeModule] || [];
     const sidebarMenus = portalMenus
-      .filter(
-        (menu) => menu.roles.includes('*') || menu.roles.includes(userRole),
-      )
+      .filter((menu) => {
+        // First check standard hardcoded roles
+        const roleAllowed = menu.roles.includes('*') || menu.roles.includes(userRole);
+        if (!roleAllowed) return false;
+        
+        // Then check dynamic DB permissions if applicable
+        if (allowedModules !== null) {
+          const dbModule = titleToDbModule(menu.title);
+          if (!allowedModules.includes(dbModule) && dbModule !== 'library') {
+            return false;
+          }
+        }
+        return true;
+      })
       .map((menu) => {
         let children: any[] = [];
         if (menu.children) {
@@ -930,41 +807,50 @@ export class ManifestController {
     // ── GENERATE PORTAL WIDGETS WITH REAL DB COUNTS ──
     const portalWidgets = PORTAL_WIDGETS[activeModule] || [];
     const dashboardWidgets: any[] = [];
-
+    const kpiItems: any[] = [];
     for (const widget of portalWidgets) {
       if (!widget.roles.includes('*') && !widget.roles.includes(userRole))
         continue;
 
-      let realValue = 0;
-      if (widget.countTable) {
-        try {
-          // HQ counts across all franchises, branch counts only own franchise
-          const isHq = activeModule === 'hq';
-          const query = isHq
-            ? `SELECT COUNT(*) as count FROM ${widget.countTable}`
-            : `SELECT COUNT(*) as count FROM ${widget.countTable} WHERE franchise_id = ?`;
-          const params = isHq ? [] : [organization];
-          const result = await this.dataSource.query(query, params);
-          realValue = result[0]?.count || 0;
-        } catch (e) {
-          // Table might not exist for this franchise - that's OK
-          realValue = 0;
+      if (widget.type === 'kpi_grid') {
+        let realValue = 0;
+        if (widget.countTable) {
+          try {
+            const isHq = activeModule === 'hq';
+            const query = isHq
+              ? `SELECT COUNT(*) as count FROM ${widget.countTable}`
+              : `SELECT COUNT(*) as count FROM ${widget.countTable} WHERE franchise_id = ?`;
+            const params = isHq ? [] : [organization];
+            const result = await this.dataSource.query(query, params);
+            realValue = result[0]?.count || 0;
+          } catch (e) {
+            realValue = 0;
+          }
         }
+        kpiItems.push({
+          title: widget.title,
+          value: realValue,
+          trend: '',
+          api: widget.apiEndpoint,
+        });
+      } else {
+        dashboardWidgets.push({
+          type: widget.type,
+          title: widget.title,
+          icon: widget.icon,
+          apiEndpoint: widget.apiEndpoint,
+          items: [],
+        });
       }
+    }
 
-      dashboardWidgets.push({
-        type: widget.type,
-        title: widget.title,
-        icon: widget.icon,
-        apiEndpoint: widget.apiEndpoint,
-        items: [
-          {
-            title: widget.title,
-            value: realValue,
-            trend: '',
-            api: widget.apiEndpoint,
-          },
-        ],
+    if (kpiItems.length > 0) {
+      dashboardWidgets.unshift({
+        type: 'kpi_grid',
+        title: 'KPIs',
+        icon: 'analytics',
+        apiEndpoint: '',
+        items: kpiItems,
       });
     }
 
