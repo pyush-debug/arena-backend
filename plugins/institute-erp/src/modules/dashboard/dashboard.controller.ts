@@ -18,4 +18,14 @@ export class DashboardController {
     
     return await this.dashboardService.getOverviewData(franchiseId, isSuperAdmin, session);
   }
+
+  @Get('analytics')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get Analytics Data' })
+  @ApiResponse({ status: 200, description: 'Analytics data returned successfully.' })
+  async getAnalytics(@Req() req: any, @Query('session') session?: string) {
+    const franchiseId = req.user.franchiseId;
+    const isSuperAdmin = req.user.role === 'super_admin' || req.user.type === 'admin';
+    return await this.dashboardService.getAnalyticsData(franchiseId, isSuperAdmin, session);
+  }
 }

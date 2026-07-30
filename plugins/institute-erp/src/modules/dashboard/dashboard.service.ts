@@ -5,79 +5,123 @@ import { DataSource } from 'typeorm';
 export class DashboardService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getAnalyticsData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
+    async getAnalyticsData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
     const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
     const fClauseAlias = isSuperAdmin ? '1=1' : `s.franchise_id='${franchiseId}'`;
     
-    // Session Filtering Logic
-    let sessionClause = '';
-    let dateClause = '';
-    if (session) {
-      sessionClause =  ` AND session='${session}'`;
-      const parts = session.split('-');
-      if (parts.length === 2) {
-        const startYear = parts[0];
-        const endYear = parts[1].length === 2 ? '20' + parts[1] : parts[1];
-        dateClause = ` AND payment_date >= '${startYear}-04-01' AND payment_date <= '${endYear}-03-31'`;
-      }
-    }
-    
     // Total Active Students
-    const stdRes = await this.dataSource.query(`SELECT COUNT(id) as total FROM students WHERE status='Active' AND ${fClause}`);
-    const totalStudents = stdRes[0]?.total || 0;
+    let totalStudents = 0;
+    try {
+      const stdRes = await this.dataSource.query(`SELECT COUNT(id) as total FROM students WHERE status='Active' AND ${fClause}`);
+      totalStudents = Number(stdRes[0]?.total || 0);
+    } catch(e) { console.error("Error fetching students:", e.message); }
+
+    // Check fee table
+    let feeTable = 'fee_payments';
+    try {
+      await this.dataSource.query('SELECT 1 FROM fee_payments LIMIT 1');
+    } catch (e) {
+      feeTable = 'fees';
+    }
 
     // Monthly Revenue
     const currMonth = new Date().getMonth() + 1;
     const currYear = new Date().getFullYear();
-    const revRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='${currMonth}' AND YEAR(payment_date)='${currYear}' AND ${fClause}`);
-    const monthlyRevenue = revRes[0]?.total || 0;
+    let monthlyRevenue = 0;
+    try {
+      const revRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM ${feeTable} WHERE MONTH(payment_date)='${currMonth}' AND YEAR(payment_date)='${currYear}' AND ${fClause}`);
+      monthlyRevenue = Number(revRes[0]?.total || 0);
+    } catch(e) { console.error("Error fetching revenue:", e.message); }
 
     // Total Discounts
     let totalDiscount = 0;
     try {
       const discRes = await this.dataSource.query(`SELECT SUM(discount_amount) as total FROM student_rewards WHERE status='Used' AND ${fClause}`);
-      totalDiscount = discRes[0]?.total || 0;
-    } catch(e) {}
+      totalDiscount = Number(discRes[0]?.total || 0);
+    } catch(e) { console.error("Error fetching discount:", e.message); }
 
-    // Revenue Chart (Last 6 Months)
-    const revLabels: string[] = [];
-    const revData: number[] = [];
-    for (let i = 5; i >= 0; i--) {
-        const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        const m = d.getMonth() + 1;
-        const y = d.getFullYear();
-        const monthName = d.toLocaleString('default', { month: 'short' }) + ' ' + y;
-        revLabels.push(monthName);
-        
-        const qChart = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='${m}' AND YEAR(payment_date)='${y}' AND ${fClause}`);
-        revData.push(Number(qChart[0]?.total || 0));
+    // Trajectory (Revenue & Attendance over last 7 months/days)
+    const revenueTrajectory: number[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const m = d.getMonth() + 1;
+      const y = d.getFullYear();
+      let revVal = 0;
+      try {
+        const qChart = await this.dataSource.query(`SELECT SUM(amount) as total FROM ${feeTable} WHERE MONTH(payment_date)='${m}' AND YEAR(payment_date)='${y}' AND ${fClause}`);
+        revVal = Number(qChart[0]?.total || 0);
+      } catch(e) {}
+      revenueTrajectory.push(revVal);
     }
 
-    // Attendance Chart (Last 7 Days)
-    const attLabels: string[] = [];
-    const attData: number[] = [];
-    for(let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dayStr = d.toISOString().split('T')[0];
-        const dayName = d.toLocaleString('default', { weekday: 'short' });
-        attLabels.push(dayName);
-
-        try {
-          const qChart = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${dayStr}' AND a.status='Present' AND ${fClauseAlias}`);
-          attData.push(Number(qChart[0]?.total || 0));
-        } catch(e) { attData.push(0); }
+    const attendancePulse: number[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      let attVal = 0;
+      try {
+        const qAtt = await this.dataSource.query(`SELECT COUNT(id) as total FROM attendance WHERE attendance_date='${dateStr}' AND status='Present' AND ${fClause}`);
+        attVal = Number(qAtt[0]?.total || 0);
+      } catch(e) {}
+      attendancePulse.push(attVal);
     }
+
+    // Gamification Stats
+    let stats = { total_xp: 0, total_sps: 0, max_streak: 0, avg_streak: 0 };
+    try {
+      const qStats = await this.dataSource.query(`SELECT SUM(g.current_xp) as total_xp, SUM(g.job_xp) as total_sps, MAX(g.current_streak) as max_streak, AVG(g.current_streak) as avg_streak FROM student_gamification g JOIN students s ON g.student_id = s.id WHERE s.status='Active' AND ${fClauseAlias}`);
+      if (qStats && qStats[0]) {
+        stats = {
+          total_xp: Number(qStats[0].total_xp || 0),
+          total_sps: Number(qStats[0].total_sps || 0),
+          max_streak: Number(qStats[0].max_streak || 0),
+          avg_streak: Number(qStats[0].avg_streak || 0),
+        };
+      }
+    } catch(e) { console.error("Error fetching gamification:", e.message); }
+
+    // Battles
+    let battlesFought = 0;
+    try {
+      const qBattles = await this.dataSource.query(`SELECT COUNT(*) as total_battles FROM battle_matches b WHERE b.status='completed' AND ${fClause}`);
+      battlesFought = Number(qBattles[0]?.total_battles || 0);
+    } catch(e) { console.error("Error fetching battles:", e.message); }
+
+    // Addicts
+    let addicts: any[] = [];
+    try {
+      addicts = await this.dataSource.query(`SELECT s.name, s.photo, g.current_streak, g.current_level FROM student_gamification g JOIN students s ON g.student_id = s.id WHERE s.status='Active' AND g.current_streak > 0 AND ${fClauseAlias} ORDER BY g.current_streak DESC LIMIT 5`);
+    } catch(e) { console.error("Error fetching addicts:", e.message); }
+
+    // Activity
+    let activityLog: any[] = [];
+    try {
+      activityLog = await this.dataSource.query(`SELECT x.xp_earned, x.activity_type, x.created_at, s.name, s.photo FROM xp_activity_log x JOIN students s ON x.student_id = s.id WHERE ${fClauseAlias} ORDER BY x.id DESC LIMIT 10`);
+    } catch(e) { console.error("Error fetching activity:", e.message); }
 
     return {
-      totalStudents,
-      monthlyRevenue,
-      totalDiscount,
-      revenueChart: { labels: revLabels, data: revData },
-      attendanceChart: { labels: attLabels, data: attData }
+      kpi: {
+        totalStudents,
+        monthlyRevenue,
+        totalDiscount
+      },
+      charts: {
+        revenueTrajectory,
+        attendancePulse
+      },
+      gamification: {
+        ...stats,
+        battlesFought
+      },
+      social: {
+        hallOfAddicts: addicts,
+        systemFeed: activityLog
+      }
     };
   }
+
 
   async getOverviewData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
     const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
