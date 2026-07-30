@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../../../../../src/modules/iam/auth/guards/jwt-auth.guard';
@@ -12,10 +12,10 @@ export class DashboardController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get Dashboard Overview Data' })
   @ApiResponse({ status: 200, description: 'Overview data returned successfully.' })
-  async getOverview(@Req() req: any) {
+  async getOverview(@Req() req: any, @Query('session') session?: string) {
     const franchiseId = req.user.franchiseId;
     const isSuperAdmin = req.user.role === 'super_admin' || req.user.type === 'admin';
     
-    return await this.dashboardService.getOverviewData(franchiseId, isSuperAdmin);
+    return await this.dashboardService.getOverviewData(franchiseId, isSuperAdmin, session);
   }
 }

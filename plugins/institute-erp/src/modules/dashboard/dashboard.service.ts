@@ -5,13 +5,26 @@ import { DataSource } from 'typeorm';
 export class DashboardService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getOverviewData(franchiseId: number, isSuperAdmin: boolean) {
+  async getOverviewData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
     const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
     const fClauseAlias = isSuperAdmin ? '1=1' : `s.franchise_id='${franchiseId}'`;
     const today = new Date().toISOString().split('T')[0];
+
+    // Session Filtering Logic
+    let sessionClause = '';
+    let dateClause = '';
+    if (session) {
+      sessionClause = ` AND session='${session}'`;
+      const parts = session.split('-');
+      if (parts.length === 2) {
+        const startYear = parts[0];
+        const endYear = parts[1].length === 2 ? '20' + parts[1] : parts[1];
+        dateClause = ` AND payment_date >= '${startYear}-04-01' AND payment_date <= '${endYear}-03-31'`;
+      }
+    }
     
     // Total Students
-    const stdRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM students WHERE status='Active' AND ${fClause}`);
+    const stdRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM students WHERE status='Active' AND ${fClause}${sessionClause}`);
     const totalStudents = stdRes[0]?.total || 0;
 
     // Total Staff
@@ -19,7 +32,7 @@ export class DashboardService {
     const totalStaff = staffRes[0]?.total || 0;
 
     // Present Today
-    const attRes = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${today}' AND a.status='Present' AND ${fClauseAlias}`);
+    const attRes = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${today}' AND a.status='Present' AND ${fClauseAlias}${sessionClause}`);
     const presentToday = attRes[0]?.total || 0;
 
     // Active Courses
@@ -31,29 +44,29 @@ export class DashboardService {
     const totalNotices = noticesCountRes[0]?.total || 0;
 
     // Revenue
-    const feeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE ${fClause}`);
+    const feeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE ${fClause}${dateClause}`);
     const totalRevenue = feeRes[0]?.total || 0;
 
     // Expenses
     let totalExpenses = 0;
     try {
-      const expRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM expenses WHERE ${fClause}`);
+      const expRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM expenses WHERE ${fClause}${dateClause.replace(/payment_date/g, 'expense_date')}`);
       totalExpenses = expRes[0]?.total || 0;
     } catch(e) {} // table might not exist in some setups
 
     // Today Fees
-    const todayFeeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE payment_date='${today}' AND ${fClause}`);
+    const todayFeeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE payment_date='${today}' AND ${fClause}${dateClause}`);
     const todayFees = todayFeeRes[0]?.total || 0;
 
     // Revenue Chart (Monthly)
     const revData = Array(12).fill(0);
-    const revQ = await this.dataSource.query(`SELECT MONTH(payment_date) as m, SUM(amount) as total FROM fee_payments WHERE YEAR(payment_date) = YEAR(CURRENT_DATE) AND ${fClause} GROUP BY MONTH(payment_date)`);
+    const revQ = await this.dataSource.query(`SELECT MONTH(payment_date) as m, SUM(amount) as total FROM fee_payments WHERE ${fClause}${dateClause} GROUP BY MONTH(payment_date)`);
     revQ.forEach(r => { if(r.m >= 1 && r.m <= 12) revData[r.m - 1] = Number(r.total); });
 
     // Course Distribution Chart
     const courseLabels: string[] = [];
     const courseData: number[] = [];
-    const crsQ = await this.dataSource.query(`SELECT c.course_name, COUNT(s.id) as total FROM courses c LEFT JOIN students s ON c.id = s.course_id WHERE s.status='Active' AND ${fClauseAlias} GROUP BY c.id`);
+    const crsQ = await this.dataSource.query(`SELECT c.course_name, COUNT(s.id) as total FROM courses c LEFT JOIN students s ON c.id = s.course_id WHERE s.status='Active' AND ${fClauseAlias}${sessionClause} GROUP BY c.id`);
     crsQ.forEach((r: any) => {
       courseLabels.push(r.course_name);
       courseData.push(Number(r.total));
