@@ -29,11 +29,13 @@ export abstract class BaseController<T extends TenantBaseEntity> {
     @CurrentTenant() tenant: TenantData,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @Query('session') session?: string,
   ) {
     const result = await this.baseService.findAll(
       tenant.franchiseId,
       page,
       limit,
+      session,
     );
     return new BaseResponse(result.data, 'Fetched successfully', result.meta);
   }

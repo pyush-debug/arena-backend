@@ -25,11 +25,22 @@ export abstract class BaseService<T extends TenantBaseEntity> {
     protected readonly moduleName: string,
   ) {}
 
-  async findAll(franchiseId: number, page: number = 1, limit: number = 10) {
+  async findAll(franchiseId: number, page: number = 1, limit: number = 10, session?: string) {
+    const where: any = { franchise_id: franchiseId };
+    
+    if (session) {
+      const metadata = this.repository.metadata;
+      const hasSession = metadata.columns.some(c => c.databaseName === 'session' || c.propertyName === 'session');
+      const hasSessionId = metadata.columns.some(c => c.databaseName === 'session_id' || c.propertyName === 'session_id' || c.propertyName === 'sessionId');
+      const hasAcademicYear = metadata.columns.some(c => c.databaseName === 'academic_year' || c.propertyName === 'academic_year' || c.propertyName === 'academicYear');
+
+      if (hasSession) where['session'] = session;
+      else if (hasSessionId) where['sessionId'] = session;
+      else if (hasAcademicYear) where['academicYear'] = session;
+    }
+
     const [data, total] = await this.repository.findAndCount({
-      where: {
-        franchise_id: franchiseId,
-      } as import('typeorm').FindOptionsWhere<T>,
+      where: where as import('typeorm').FindOptionsWhere<T>,
       skip: (page - 1) * limit,
       take: limit,
     });

@@ -657,6 +657,19 @@ export class ManifestController {
             : null;
           const isExpired = expiryDate ? new Date() > expiryDate : false;
 
+          const regDateRaw = franchise.joined_date || franchise.created_at;
+          const regDate = regDateRaw ? new Date(regDateRaw).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+          let renDate = "Lifetime";
+          if (franchise.id !== 1 && !franchise.is_lifetime) {
+            if (franchise.expiry_date) {
+               renDate = new Date(franchise.expiry_date).toLocaleDateString('en-GB');
+            } else if (regDateRaw) {
+               const nextYear = new Date(regDateRaw);
+               nextYear.setFullYear(nextYear.getFullYear() + 1);
+               renDate = nextYear.toLocaleDateString('en-GB');
+            }
+          }
+
           franchiseInfo = {
             id: franchise.id,
             branch_name: franchise.branch_name,
@@ -667,6 +680,13 @@ export class ManifestController {
             plan_type: franchise.plan_type,
             isExpired: isExpired,
             expiryDate: franchise.expiry_date,
+            owner_name: franchise.owner_name,
+            contact_phone: franchise.phone || franchise.contact_phone,
+            email: franchise.email,
+            udise_code: franchise.udise_code,
+            address: franchise.address,
+            reg_date: regDate,
+            ren_date: renDate
           };
 
           customLogo = franchiseInfo.logo;
