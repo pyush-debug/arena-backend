@@ -6,36 +6,36 @@ export class DashboardService {
   constructor(private readonly dataSource: DataSource) {}
 
   async getAnalyticsData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
-    const fClause = isSuperAdmin ? '1=1' : ranchise_id='';
-    const fClauseAlias = isSuperAdmin ? '1=1' : s.franchise_id='';
+    const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
+    const fClauseAlias = isSuperAdmin ? '1=1' : `s.franchise_id='${franchiseId}'`;
     
     // Session Filtering Logic
     let sessionClause = '';
     let dateClause = '';
     if (session) {
-      sessionClause =  AND session='';
+      sessionClause =  ` AND session='${session}'`;
       const parts = session.split('-');
       if (parts.length === 2) {
         const startYear = parts[0];
         const endYear = parts[1].length === 2 ? '20' + parts[1] : parts[1];
-        dateClause =  AND payment_date >= '-04-01' AND payment_date <= '-03-31';
+        dateClause = ` AND payment_date >= '${startYear}-04-01' AND payment_date <= '${endYear}-03-31'`;
       }
     }
     
     // Total Active Students
-    const stdRes = await this.dataSource.query(SELECT COUNT(id) as total FROM students WHERE status='Active' AND );
+    const stdRes = await this.dataSource.query(`SELECT COUNT(id) as total FROM students WHERE status='Active' AND ${fClause}`);
     const totalStudents = stdRes[0]?.total || 0;
 
     // Monthly Revenue
     const currMonth = new Date().getMonth() + 1;
     const currYear = new Date().getFullYear();
-    const revRes = await this.dataSource.query(SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='' AND YEAR(payment_date)='' AND );
+    const revRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='${currMonth}' AND YEAR(payment_date)='${currYear}' AND ${fClause}`);
     const monthlyRevenue = revRes[0]?.total || 0;
 
     // Total Discounts
     let totalDiscount = 0;
     try {
-      const discRes = await this.dataSource.query(SELECT SUM(discount_amount) as total FROM student_rewards WHERE status='Used' AND );
+      const discRes = await this.dataSource.query(`SELECT SUM(discount_amount) as total FROM student_rewards WHERE status='Used' AND ${fClause}`);
       totalDiscount = discRes[0]?.total || 0;
     } catch(e) {}
 
@@ -50,7 +50,7 @@ export class DashboardService {
         const monthName = d.toLocaleString('default', { month: 'short' }) + ' ' + y;
         revLabels.push(monthName);
         
-        const qChart = await this.dataSource.query(SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='' AND YEAR(payment_date)='' AND );
+        const qChart = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='${m}' AND YEAR(payment_date)='${y}' AND ${fClause}`);
         revData.push(Number(qChart[0]?.total || 0));
     }
 
@@ -65,7 +65,7 @@ export class DashboardService {
         attLabels.push(dayName);
 
         try {
-          const qChart = await this.dataSource.query(SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='' AND a.status='Present' AND );
+          const qChart = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${dayStr}' AND a.status='Present' AND ${fClauseAlias}`);
           attData.push(Number(qChart[0]?.total || 0));
         } catch(e) { attData.push(0); }
     }

@@ -642,6 +642,7 @@ export class ManifestController {
     let allFranchises: any[] = [];
     let customLogo: string | null = null;
     let customTitle = 'Arena OS';
+    let availableSessions: string[] = [];
 
     if (organization && organization !== 0) {
       try {
