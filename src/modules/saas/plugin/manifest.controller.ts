@@ -684,7 +684,7 @@ export class ManifestController {
           const expiryDate = franchise.expiry_date
             ? new Date(franchise.expiry_date)
             : null;
-          const isExpired = false;
+          const isExpired = expiryDate ? new Date() > expiryDate : false;
 
           franchiseInfo = {
             id: franchise.id,
