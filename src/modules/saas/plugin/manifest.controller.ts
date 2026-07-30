@@ -28,13 +28,14 @@ interface PortalMenu {
 }
 
 interface PortalWidget {
-  type: string;
+  type?: string;
   title: string;
   icon: string;
-  apiEndpoint: string;
+  apiEndpoint?: string;
   countQuery?: string;
   countTable?: string;
   roles: string[];
+  route?: string;
 }
 
 const PORTAL_MENUS: Record<string, PortalMenu[]> = {
