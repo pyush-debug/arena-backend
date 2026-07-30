@@ -39,83 +39,26 @@ interface PortalWidget {
 
 const PORTAL_MENUS: Record<string, PortalMenu[]> = {
   hq: [
-    {
-      title: 'Franchise Management',
-      icon: 'business',
-      route: '/hq/franchises',
-      apiEndpoint: '/v1/dynamic/franchises',
-      roles: ['*'],
-    },
-    {
-      title: 'Revenue & Billing',
-      icon: 'payments',
-      route: '/hq/revenue',
-      apiEndpoint: '/hq/revenue/dashboard',
-      roles: ['*'],
-    },
-    {
-      title: 'Subscriptions',
-      icon: 'card_membership',
-      route: '/hq/subscriptions',
-      apiEndpoint: '/v1/dynamic/franchise_subscriptions',
-      roles: ['*'],
-    },
-    {
-      title: 'Franchise Payments',
-      icon: 'receipt_long',
-      route: '/hq/payments',
-      apiEndpoint: '/v1/dynamic/franchise_payments',
-      roles: ['*'],
-    },
-    {
-      title: 'Feature Toggles',
-      icon: 'toggle_on',
-      route: '/hq/features',
-      apiEndpoint: '/hq/operations/features',
-      roles: ['*'],
-    },
-    {
-      title: 'User Management',
-      icon: 'manage_accounts',
-      route: '/hq/users',
-      apiEndpoint: '/v1/dynamic/users',
-      roles: ['*'],
-    },
-    {
-      title: 'Audit Logs',
-      icon: 'security',
-      route: '/hq/audit',
-      apiEndpoint: '/v1/dynamic/activities',
-      roles: ['*'],
-    },
-    {
-      title: 'Analytics',
-      icon: 'analytics',
-      route: '/hq/analytics',
-      apiEndpoint: '/hq/operations/analytics',
-      roles: ['*'],
-    },
-    {
-      title: 'System Settings',
-      icon: 'settings',
-      route: '/hq/settings',
-      apiEndpoint: '/v1/dynamic/master_settings',
-      roles: ['*'],
-    },
-    {
-      title: 'Notifications',
-      icon: 'notifications',
-      route: '/hq/notifications',
-      apiEndpoint: '/v1/dynamic/system_notifications',
-      roles: ['*'],
-    },
-    {
-      title: 'Franchise Enquiries',
-      icon: 'contact_support',
-      route: '/hq/enquiries',
-      apiEndpoint: '/v1/dynamic/franchise_enquiries',
-      roles: ['*'],
-    },
+    { title: 'HQ Dashboard', icon: 'dashboard', route: '/hq/dashboard', roles: ['*'] },
+    { title: 'Franchise Management', icon: 'business', route: '/hq/franchises', roles: ['*'] },
+    { title: 'Schools', icon: 'school', route: '/hq/schools', roles: ['*'] },
+    { title: 'Institutes', icon: 'account_balance', route: '/hq/institutes', roles: ['*'] },
+    { title: 'Resorts', icon: 'hotel', route: '/hq/resorts', roles: ['*'] },
+    { title: 'Revenue', icon: 'payments', route: '/hq/revenue', roles: ['*'] },
+    { title: 'Billing', icon: 'receipt', route: '/hq/billing', roles: ['*'] },
+    { title: 'Subscription', icon: 'card_membership', route: '/hq/subscriptions', roles: ['*'] },
+    { title: 'License', icon: 'verified', route: '/hq/licenses', roles: ['*'] },
+    { title: 'Monitoring', icon: 'monitor_heart', route: '/hq/monitoring', roles: ['*'] },
+    { title: 'Analytics', icon: 'analytics', route: '/hq/analytics', roles: ['*'] },
+    { title: 'Timeline', icon: 'timeline', route: '/hq/timeline', roles: ['*'] },
+    { title: 'Audit Logs', icon: 'security', route: '/hq/audit', roles: ['*'] },
+    { title: 'Global Settings', icon: 'settings', route: '/hq/settings', roles: ['*'] },
+    { title: 'Plugins', icon: 'extension', route: '/hq/plugins', roles: ['*'] },
+    { title: 'User Management', icon: 'manage_accounts', route: '/hq/users', roles: ['*'] },
+    { title: 'Role Management', icon: 'admin_panel_settings', route: '/hq/roles', roles: ['*'] },
+    { title: 'Notifications', icon: 'notifications', route: '/hq/notifications', roles: ['*'] },
+    { title: 'Reports', icon: 'assessment', route: '/hq/reports', roles: ['*'] },
+    { title: 'Profile', icon: 'person', route: '/hq/profile', roles: ['*'] },
   ],
 
   school: [
@@ -169,6 +112,10 @@ const PORTAL_MENUS: Record<string, PortalMenu[]> = {
       ]
     },
     { title: 'Attendance Scanner', icon: 'qr_code_scanner', route: '/school/attendance/scanner', apiEndpoint: '/v1/dynamic/attendance', roles: ['*'] },
+      { title: 'Expense Desk', icon: 'receipt_long', route: '/school/expenses', apiEndpoint: '/v1/dynamic/expenses', roles: ['*'] },
+      { title: 'Subscriptions', icon: 'subscriptions', route: '/school/subscriptions', apiEndpoint: '/v1/dynamic/subscriptions', roles: ['admin'] },
+      { title: 'Web Pages', icon: 'web', route: '/school/webpages', apiEndpoint: '/v1/dynamic/webpages', roles: ['admin'] },
+      { title: 'Settings', icon: 'settings', route: '/school/settings', apiEndpoint: '/v1/dynamic/settings', roles: ['admin'] },
     {
       title: 'Attendance Desk', icon: 'how_to_reg', route: '/school/attendance-group', roles: ['admin', 'staff'],
       children: [
@@ -273,6 +220,9 @@ const PORTAL_MENUS: Record<string, PortalMenu[]> = {
     },
     { title: 'Transport Module', icon: 'directions_bus', route: '/institute/transport', apiEndpoint: '/v1/dynamic/transport', roles: ['admin'] },
     { title: 'Arena Controls', icon: 'sports_esports', route: '/institute/gamification', apiEndpoint: '/v1/dynamic/gamification', roles: ['admin'] },
+      { title: 'Expense Desk', icon: 'receipt_long', route: '/institute/expenses', apiEndpoint: '/v1/dynamic/expenses', roles: ['*'] },
+      { title: 'Complaints', icon: 'report_problem', route: '/institute/complaints', apiEndpoint: '/v1/dynamic/complaints', roles: ['*'] },
+      { title: 'Settings', icon: 'settings', route: '/institute/settings', apiEndpoint: '/v1/dynamic/settings', roles: ['admin'] },
   ]
 ,
   resort: [
@@ -390,54 +340,26 @@ const PORTAL_MENUS: Record<string, PortalMenu[]> = {
 
 const PORTAL_WIDGETS: Record<string, PortalWidget[]> = {
   hq: [
-    {
-      type: 'kpi_grid',
-      title: 'Active Franchises',
-      icon: 'business',
-      apiEndpoint: '/hq/franchises',
-      countTable: 'franchises',
-      roles: ['*'],
-    },
-    {
-      type: 'kpi_grid',
-      title: 'Total Revenue',
-      icon: 'payments',
-      apiEndpoint: '/hq/revenue',
-      countTable: 'franchise_payments',
-      roles: ['*'],
-    },
-    {
-      type: 'kpi_grid',
-      title: 'Active Subscriptions',
-      icon: 'card_membership',
-      apiEndpoint: '/hq/subscriptions',
-      countTable: 'franchise_subscriptions',
-      roles: ['*'],
-    },
-    {
-      type: 'kpi_grid',
-      title: 'Franchise Enquiries',
-      icon: 'contact_support',
-      apiEndpoint: '/hq/enquiries',
-      countTable: 'franchise_enquiries',
-      roles: ['*'],
-    },
-    {
-      type: 'kpi_grid',
-      title: 'Total Students (All)',
-      icon: 'people',
-      apiEndpoint: '/hq/students',
-      countTable: 'students',
-      roles: ['*'],
-    },
-    {
-      type: 'kpi_grid',
-      title: 'System Users',
-      icon: 'manage_accounts',
-      apiEndpoint: '/hq/users',
-      countTable: 'users',
-      roles: ['*'],
-    },
+    { title: 'HQ Dashboard', icon: 'dashboard', route: '/hq/dashboard', roles: ['*'] },
+    { title: 'Franchise Management', icon: 'business', route: '/hq/franchises', roles: ['*'] },
+    { title: 'Schools', icon: 'school', route: '/hq/schools', roles: ['*'] },
+    { title: 'Institutes', icon: 'account_balance', route: '/hq/institutes', roles: ['*'] },
+    { title: 'Resorts', icon: 'hotel', route: '/hq/resorts', roles: ['*'] },
+    { title: 'Revenue', icon: 'payments', route: '/hq/revenue', roles: ['*'] },
+    { title: 'Billing', icon: 'receipt', route: '/hq/billing', roles: ['*'] },
+    { title: 'Subscription', icon: 'card_membership', route: '/hq/subscriptions', roles: ['*'] },
+    { title: 'License', icon: 'verified', route: '/hq/licenses', roles: ['*'] },
+    { title: 'Monitoring', icon: 'monitor_heart', route: '/hq/monitoring', roles: ['*'] },
+    { title: 'Analytics', icon: 'analytics', route: '/hq/analytics', roles: ['*'] },
+    { title: 'Timeline', icon: 'timeline', route: '/hq/timeline', roles: ['*'] },
+    { title: 'Audit Logs', icon: 'security', route: '/hq/audit', roles: ['*'] },
+    { title: 'Global Settings', icon: 'settings', route: '/hq/settings', roles: ['*'] },
+    { title: 'Plugins', icon: 'extension', route: '/hq/plugins', roles: ['*'] },
+    { title: 'User Management', icon: 'manage_accounts', route: '/hq/users', roles: ['*'] },
+    { title: 'Role Management', icon: 'admin_panel_settings', route: '/hq/roles', roles: ['*'] },
+    { title: 'Notifications', icon: 'notifications', route: '/hq/notifications', roles: ['*'] },
+    { title: 'Reports', icon: 'assessment', route: '/hq/reports', roles: ['*'] },
+    { title: 'Profile', icon: 'person', route: '/hq/profile', roles: ['*'] },
   ],
 
   school: [
@@ -634,26 +556,26 @@ export class ManifestController {
     )?.toLowerCase();
 
     let activeModule = requestedModuleHeader || requestedModuleQuery;
-    const available_modules: string[] = req.user.available_modules || [];
+    let available_modules: string[] = req.user.available_modules || [];
+    const isSuperAdmin = userRole === 'super_admin' || accountType === 'admin';
+
+    // HQ Injection: HQ gets all portals
+    if (isSuperAdmin) {
+      available_modules = ['hq', 'school', 'institute', 'resort'];
+    }
 
     // ── STRICT MODULE ISOLATION ──
-    // Enforce: user can only access modules in their JWT available_modules
     if (
       activeModule &&
       activeModule !== 'arena' &&
       !available_modules.includes(activeModule)
     ) {
-      // Emergency bypass for HQ Super Admins with older tokens
-      if ((userRole === 'super_admin' || userRole === 'admin' || accountType === 'admin') && activeModule === 'hq') {
-        available_modules.push('hq');
-      } else {
-        console.log(
-          `[MANIFEST] FORBIDDEN: User ${req.user.username} (role=${userRole}) tried to access module=${activeModule}, available=${JSON.stringify(available_modules)}`,
-        );
-        throw new ForbiddenException(
-          `Access denied: You do not have permission for the ${activeModule} portal.`,
-        );
-      }
+      console.log(
+        `[MANIFEST] FORBIDDEN: User ${req.user.username} (role=${userRole}) tried to access module=${activeModule}, available=${JSON.stringify(available_modules)}`,
+      );
+      throw new ForbiddenException(
+        `Access denied: You do not have permission for the ${activeModule} portal.`,
+      );
     }
 
     // Default to first available module
@@ -743,7 +665,7 @@ export class ManifestController {
 
     // Fetch dynamic permissions if the user is a normal staff
     let allowedModules: string[] | null = null; // null means all allowed (admin)
-    if (accountType === 'user' && userRole.toLowerCase() !== 'admin' && userRole.toLowerCase() !== 'super_admin') {
+    if (accountType === 'user' && !userRole.toLowerCase().includes('admin') && userRole.toLowerCase() !== 'super_admin') {
       try {
         const perms = await this.dataSource.query(
           'SELECT module_name FROM role_permissions WHERE franchise_id = ? AND role_name = ? AND is_allowed = 1',
@@ -778,7 +700,7 @@ export class ManifestController {
     const sidebarMenus = portalMenus
       .filter((menu) => {
         // First check standard hardcoded roles
-        const roleAllowed = menu.roles.includes('*') || menu.roles.includes(userRole);
+        const roleAllowed = isSuperAdmin || menu.roles.includes('*') || menu.roles.includes(userRole);
         if (!roleAllowed) return false;
         
         // Then check dynamic DB permissions if applicable
@@ -794,7 +716,7 @@ export class ManifestController {
         let children: any[] = [];
         if (menu.children) {
           children = menu.children
-            .filter((child: any) => child.roles.includes('*') || child.roles.includes(userRole))
+            .filter((child: any) => isSuperAdmin || child.roles.includes('*') || child.roles.includes(userRole))
             .map((child: any) => ({
               title: child.title,
               icon: child.icon,
@@ -816,18 +738,18 @@ export class ManifestController {
     const dashboardWidgets: any[] = [];
     const kpiItems: any[] = [];
     for (const widget of portalWidgets) {
-      if (!widget.roles.includes('*') && !widget.roles.includes(userRole))
+      if (!isSuperAdmin && !widget.roles.includes('*') && !widget.roles.includes(userRole))
         continue;
 
       if (widget.type === 'kpi_grid') {
         let realValue = 0;
         if (widget.countTable) {
           try {
-            const isHq = activeModule === 'hq';
-            const query = isHq
+            const isHqOrSuperAdmin = activeModule === 'hq' || isSuperAdmin;
+            const query = isHqOrSuperAdmin
               ? `SELECT COUNT(*) as count FROM ${widget.countTable}`
               : `SELECT COUNT(*) as count FROM ${widget.countTable} WHERE franchise_id = ?`;
-            const params = isHq ? [] : [organization];
+            const params = isHqOrSuperAdmin ? [] : [organization];
             const result = await this.dataSource.query(query, params);
             realValue = result[0]?.count || 0;
           } catch (e) {

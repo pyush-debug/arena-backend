@@ -22,6 +22,14 @@ export class DashboardService {
     const attRes = await this.dataSource.query(`SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='${today}' AND a.status='Present' AND ${fClauseAlias}`);
     const presentToday = attRes[0]?.total || 0;
 
+    // Active Courses
+    const courseCountRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM courses`);
+    const totalCourses = courseCountRes[0]?.total || 0;
+
+    // Total Notices
+    const noticesCountRes = await this.dataSource.query(`SELECT COUNT(*) as total FROM notices`);
+    const totalNotices = noticesCountRes[0]?.total || 0;
+
     // Revenue
     const feeRes = await this.dataSource.query(`SELECT SUM(amount) as total FROM fee_payments WHERE ${fClause}`);
     const totalRevenue = feeRes[0]?.total || 0;
@@ -138,6 +146,8 @@ export class DashboardService {
         totalRevenue: Number(totalRevenue),
         totalExpenses: Number(totalExpenses),
         todayFees: Number(todayFees),
+        totalCourses: Number(totalCourses),
+        totalNotices: Number(totalNotices),
       },
       charts: {
         revenue: { data: revData },

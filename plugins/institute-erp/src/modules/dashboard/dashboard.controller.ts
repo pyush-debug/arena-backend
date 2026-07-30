@@ -14,7 +14,7 @@ export class DashboardController {
   @ApiResponse({ status: 200, description: 'Overview data returned successfully.' })
   async getOverview(@Req() req: any) {
     const franchiseId = req.user.franchiseId;
-    const isSuperAdmin = franchiseId === 1; // Basic check for super admin
+    const isSuperAdmin = req.user.role === 'super_admin' || req.user.type === 'admin';
     
     return await this.dashboardService.getOverviewData(franchiseId, isSuperAdmin);
   }
