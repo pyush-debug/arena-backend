@@ -46,6 +46,7 @@ import { DashboardService } from './modules/dashboard/dashboard.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      InstituteCourse,
       InstituteDepartmentEntity,
       InstituteBatchEntity,
       InstituteEnrollmentEntity,
