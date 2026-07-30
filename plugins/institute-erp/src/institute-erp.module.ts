@@ -1,3 +1,6 @@
+import { InstituteCourseService } from './services/institute-course.service';
+import { InstituteCourseController } from './controllers/institute-course.controller';
+import { InstituteCourse } from './entities/institute-course.entity';
 import { InstituteDonationService } from './services/institute-donation.service';
 import { InstituteSkillService } from './services/institute-skill.service';
 import { InstituteDriveService } from './services/institute-drive.service';
@@ -68,6 +71,7 @@ import { DashboardService } from './modules/dashboard/dashboard.service';
     InstituteCompanyController,
     InstituteDriveController,
     InstituteSkillController,
+    InstituteCourseController,
     InstituteDonationController,
     DashboardController
   ],
@@ -81,6 +85,7 @@ import { DashboardService } from './modules/dashboard/dashboard.service';
     InstituteCompanyService,
     InstituteDriveService,
     InstituteSkillService,
+    InstituteCourseService,
     InstituteDonationService,
     DashboardService
   ],

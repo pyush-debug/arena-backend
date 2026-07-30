@@ -5,6 +5,80 @@ import { DataSource } from 'typeorm';
 export class DashboardService {
   constructor(private readonly dataSource: DataSource) {}
 
+  async getAnalyticsData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
+    const fClause = isSuperAdmin ? '1=1' : ranchise_id='';
+    const fClauseAlias = isSuperAdmin ? '1=1' : s.franchise_id='';
+    
+    // Session Filtering Logic
+    let sessionClause = '';
+    let dateClause = '';
+    if (session) {
+      sessionClause =  AND session='';
+      const parts = session.split('-');
+      if (parts.length === 2) {
+        const startYear = parts[0];
+        const endYear = parts[1].length === 2 ? '20' + parts[1] : parts[1];
+        dateClause =  AND payment_date >= '-04-01' AND payment_date <= '-03-31';
+      }
+    }
+    
+    // Total Active Students
+    const stdRes = await this.dataSource.query(SELECT COUNT(id) as total FROM students WHERE status='Active' AND );
+    const totalStudents = stdRes[0]?.total || 0;
+
+    // Monthly Revenue
+    const currMonth = new Date().getMonth() + 1;
+    const currYear = new Date().getFullYear();
+    const revRes = await this.dataSource.query(SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='' AND YEAR(payment_date)='' AND );
+    const monthlyRevenue = revRes[0]?.total || 0;
+
+    // Total Discounts
+    let totalDiscount = 0;
+    try {
+      const discRes = await this.dataSource.query(SELECT SUM(discount_amount) as total FROM student_rewards WHERE status='Used' AND );
+      totalDiscount = discRes[0]?.total || 0;
+    } catch(e) {}
+
+    // Revenue Chart (Last 6 Months)
+    const revLabels: string[] = [];
+    const revData: number[] = [];
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const m = d.getMonth() + 1;
+        const y = d.getFullYear();
+        const monthName = d.toLocaleString('default', { month: 'short' }) + ' ' + y;
+        revLabels.push(monthName);
+        
+        const qChart = await this.dataSource.query(SELECT SUM(amount) as total FROM fee_payments WHERE MONTH(payment_date)='' AND YEAR(payment_date)='' AND );
+        revData.push(Number(qChart[0]?.total || 0));
+    }
+
+    // Attendance Chart (Last 7 Days)
+    const attLabels: string[] = [];
+    const attData: number[] = [];
+    for(let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dayStr = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleString('default', { weekday: 'short' });
+        attLabels.push(dayName);
+
+        try {
+          const qChart = await this.dataSource.query(SELECT COUNT(a.id) as total FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.attendance_date='' AND a.status='Present' AND );
+          attData.push(Number(qChart[0]?.total || 0));
+        } catch(e) { attData.push(0); }
+    }
+
+    return {
+      totalStudents,
+      monthlyRevenue,
+      totalDiscount,
+      revenueChart: { labels: revLabels, data: revData },
+      attendanceChart: { labels: attLabels, data: attData }
+    };
+  }
+
   async getOverviewData(franchiseId: number, isSuperAdmin: boolean, session?: string) {
     const fClause = isSuperAdmin ? '1=1' : `franchise_id='${franchiseId}'`;
     const fClauseAlias = isSuperAdmin ? '1=1' : `s.franchise_id='${franchiseId}'`;

@@ -692,8 +692,15 @@ export class ManifestController {
           customLogo = franchiseInfo.logo;
           customTitle = franchise.branch_name || 'Arena OS';
         }
+        
+        // Fetch sessions
+        const sessionRows = await this.dataSource.query(
+          'SELECT session_name FROM sessions WHERE franchise_id = ? AND status = "Active" ORDER BY session_name DESC',
+          [organization]
+        );
+        availableSessions = sessionRows.map(row => row.session_name);
       } catch (e) {
-        console.error('[MANIFEST] Failed to fetch franchise', e);
+        console.error('[MANIFEST] Failed to fetch franchise/sessions', e);
       }
     } else {
       // HQ user (admin table, no franchise)
