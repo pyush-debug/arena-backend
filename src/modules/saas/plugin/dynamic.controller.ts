@@ -9,7 +9,19 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  UploadedFile,
+  UseInterceptors
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { v2 as cloudinary } from 'cloudinary';
+import { Readable } from 'stream';
+
+cloudinary.config({
+  cloud_name: 'n9b214gb',
+  api_key: '793197693191996',
+  api_secret: 'PLuH16oCO6TAtNpuNbLVrHtwOIk',
+});
+
 import { DataSource } from 'typeorm';
 import { JwtAuthGuard } from '../../iam/auth/guards/jwt-auth.guard';
 import type { Request } from 'express';
@@ -138,4 +150,27 @@ export class DynamicController {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post('upload_file')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new HttpException('File required', HttpStatus.BAD_REQUEST);
+
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { resource_type: 'auto', folder: 'arena_os_dynamic' },
+        (error, result) => {
+          if (error) return reject(new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR));
+          resolve({ success: true, url: result?.secure_url });
+        },
+      );
+      const readable = new Readable();
+      readable._read = () => {};
+      readable.push(file.buffer);
+      readable.push(null);
+      readable.pipe(uploadStream);
+    });
+  }
+
 }
