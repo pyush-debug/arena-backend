@@ -19,6 +19,25 @@
     { "role": "ROLE_PLACEMENT", "title": "Placement Cell", "icon": "work", "route": "/institute/placements" },
     { "role": "ROLE_ALUMNI", "title": "Alumni Network", "icon": "groups", "route": "/institute/alumni" },
     { "role": "ROLE_FINANCE", "title": "Fees", "icon": "account_balance", "route": "/institute/fees" },
-    { "role": "ROLE_CAMPUS", "title": "Campus", "icon": "domain", "route": "/institute/campus" }
+    { "role": "ROLE_CAMPUS", "title": "Campus", "icon": "domain", "route": "/institute/campus" },
+    { "role": "ROLE_ACADEMICS", "title": "Library Desk", "icon": "local_library", "route": "/library_desk" },
+    { 
+      "role": "ROLE_ACADEMICS", "title": "Students", "icon": "school", 
+      "children": [
+        { "title": "Add Student", "route": "/student_desk/add" },
+        { "title": "Bulk Import", "route": "/student_desk/import" },
+        { "title": "View Students", "route": "/student_desk/view" },
+        { "title": "Promote Class", "route": "/student_desk/promote" }
+      ]
+    },
+    { 
+      "role": "ROLE_HR", "title": "Staff Desk", "icon": "badge", 
+      "children": [
+        { "title": "Add Staff", "route": "/staff_desk/add" },
+        { "title": "View Staff", "route": "/staff_desk/view" },
+        { "title": "Staff Attendance", "route": "/staff_desk/attendance" },
+        { "title": "Attendance Report", "route": "/staff_desk/attendance_report" }
+      ]
+    }
   ]
 }

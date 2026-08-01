@@ -25,6 +25,10 @@ export abstract class BaseService<T extends TenantBaseEntity> {
     protected readonly moduleName: string,
   ) {}
 
+  getRepository(): Repository<T> {
+    return this.repository;
+  }
+
   async findAll(franchiseId: number, page: number = 1, limit: number = 10, session?: string) {
     const where: any = { franchise_id: franchiseId };
     

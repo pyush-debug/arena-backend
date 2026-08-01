@@ -42,6 +42,12 @@ import { AlumniController } from './modules/operations/alumni.controller';
 import { AlumniService } from './modules/operations/alumni.service';
 import { DashboardController } from './modules/dashboard/dashboard.controller';
 import { DashboardService } from './modules/dashboard/dashboard.service';
+import { LibraryController } from './modules/operations/library.controller';
+import { LibraryService } from './modules/operations/library.service';
+import { StaffController } from './modules/operations/staff.controller';
+import { StaffService } from './modules/operations/staff.service';
+import { StudentController } from './modules/operations/student.controller';
+import { StudentService } from './modules/operations/student.service';
 
 @Module({
   imports: [
@@ -74,7 +80,10 @@ import { DashboardService } from './modules/dashboard/dashboard.service';
     InstituteSkillController,
     InstituteCourseController,
     InstituteDonationController,
-    DashboardController
+    DashboardController,
+    LibraryController,
+    StaffController,
+    StudentController,
   ],
   providers: [
     AcademicsService,
@@ -88,7 +97,10 @@ import { DashboardService } from './modules/dashboard/dashboard.service';
     InstituteSkillService,
     InstituteCourseService,
     InstituteDonationService,
-    DashboardService
+    DashboardService,
+    LibraryService,
+    StaffService,
+    StudentService,
   ],
   exports: [
     AcademicsService,
