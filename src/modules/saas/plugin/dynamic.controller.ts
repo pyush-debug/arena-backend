@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
+  Put,
   Body,
   Param,
   Req,
@@ -146,6 +148,82 @@ export class DynamicController {
         message: 'Record created successfully',
         insertId: result.insertId,
       };
+    } catch (e: any) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  
+  @Delete(':table/:id')
+  async deleteRecord(
+    @Param('table') table: string,
+    @Param('id') id: string,
+    @Req() req: Request
+  ) {
+    if (!/^[a-zA-Z0-9_]+$/.test(table)) throw new HttpException('Invalid table name', HttpStatus.BAD_REQUEST);
+
+    const user = req.user as any;
+    const franchiseId = user.franchiseId;
+
+    try {
+      const quotedTable = `\`${table}\``;
+      const columns = await this.dataSource.query(`SHOW COLUMNS FROM ${quotedTable}`);
+      const hasFranchise = columns.some((c: any) => c.Field === 'franchise_id');
+
+      let query = `DELETE FROM ${quotedTable} WHERE id = ?`;
+      const params: any[] = [id];
+
+      if (franchiseId !== 1 && hasFranchise) {
+        query += ` AND franchise_id = ?`;
+        params.push(franchiseId);
+      }
+
+      const result = await this.dataSource.query(query, params);
+      return { success: true, message: 'Deleted successfully', affectedRows: result.affectedRows };
+    } catch (e: any) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Put(':table/:id')
+  async updateRecord(
+    @Param('table') table: string,
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() body: any
+  ) {
+    if (!/^[a-zA-Z0-9_]+$/.test(table)) throw new HttpException('Invalid table name', HttpStatus.BAD_REQUEST);
+
+    const user = req.user as any;
+    const franchiseId = user.franchiseId;
+
+    try {
+      const quotedTable = `\`${table}\``;
+      const columns = await this.dataSource.query(`SHOW COLUMNS FROM ${quotedTable}`);
+      const validColumns = columns.map((c: any) => c.Field);
+      
+      const updateData: Record<string, any> = {};
+      for (const [key, value] of Object.entries(body)) {
+        if (validColumns.includes(key) && key !== 'id') {
+          updateData[key] = value;
+        }
+      }
+
+      if (Object.keys(updateData).length === 0) throw new HttpException('No valid data', HttpStatus.BAD_REQUEST);
+
+      const setClause = Object.keys(updateData).map(k => `\`${k}\` = ?`).join(', ');
+      const values = Object.values(updateData);
+
+      let query = `UPDATE ${quotedTable} SET ${setClause} WHERE id = ?`;
+      values.push(id);
+
+      if (franchiseId !== 1 && columns.some((c: any) => c.Field === 'franchise_id')) {
+        query += ` AND franchise_id = ?`;
+        values.push(franchiseId);
+      }
+
+      const result = await this.dataSource.query(query, values);
+      return { success: true, message: 'Updated successfully', affectedRows: result.affectedRows };
     } catch (e: any) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
